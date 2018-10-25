@@ -9,6 +9,7 @@ public class CaveMap : MonoBehaviour {
     [SerializeField] private int width = 64;
     [SerializeField] private int height = 64;
     [SerializeField] private int closingLayers;
+    [SerializeField] private int minRoomSize = 25;
 
     [SerializeField] private GameObject wallTile;
     [SerializeField] private GameObject floorTile;
@@ -71,6 +72,9 @@ public class CaveMap : MonoBehaviour {
     {
         PerlinizeNodeMap();
         CloseCaveSystem();
+        FindFloorNodes();
+        FindRooms();
+        RemoveSmallRooms();
         NegateSuperfluousNodes();
 
     }
@@ -83,7 +87,7 @@ public class CaveMap : MonoBehaviour {
             {
                 float p = perlinGenerator.GetPerlin((float)x / width, (float)y / height, 0.0f);
                 nodeMap[x, y].SetValue(p);
-                if(p == 0.0f) { floorNodes.Add(nodeMap[x, y]); }
+                
             }
         }
     }
@@ -162,6 +166,40 @@ public class CaveMap : MonoBehaviour {
         }
     }
 
+    private void FindFloorNodes()
+    {
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (nodeMap[x, y].Value == 0.0f) { floorNodes.Add(nodeMap[x, y]); }
+            }
+        }
+    }
+
+    private void RemoveSmallRooms()
+    {
+        int i = 0;
+        while(i < rooms.Count)
+        {
+            if(rooms[i].Size < minRoomSize)
+            {
+                while(rooms[i].Size > 0)
+                {
+                    {
+                        rooms[i].GetNode(0).SetValue(1.0f);
+                        rooms[i].RemoveNode(0);
+                    }
+                }
+                rooms.RemoveAt(i);
+            } else
+            {
+                i++;
+            }
+        }
+    }
+
     private void ApplyGraphics()
     {
         GameObject toInstantiate = null;
@@ -222,4 +260,68 @@ public class CaveMap : MonoBehaviour {
         }
     }
 
+
+    private void FindRooms()
+    {
+        
+        List<Node> unroomedNodes = floorNodes;
+
+        int breakCount = 0;
+
+        while (unroomedNodes.Count > 0)
+        {
+            rooms.Add(FindRoom(unroomedNodes[0], 0.0f));
+
+            for (int i = 0; i < rooms[rooms.Count - 1].Size; i++)
+            {
+                unroomedNodes.Remove(rooms[rooms.Count - 1].GetNode(i));
+            }
+
+            breakCount++;
+            //if (breakCount == 1000)
+            //{
+            //    UnityEngine.Debug.LogError("Loop Broken. unroomedNodes: " + unroomedNodes.Count.ToString());
+            //    break;
+            //}
+        }
+    }
+
+    private Room FindRoom(Node startingNode, float targetVal)
+    {
+        Stack<Node> nodesToFill = new Stack<Node>();
+        Room r = new Room();
+
+        int breakCount = 0;
+
+        nodesToFill.Push(startingNode);
+
+        while(nodesToFill.Count > 0)
+        {
+            Node n = nodesToFill.Pop();
+            if(IsValidCoordinate(n.Address.x, n.Address.y))
+            {
+                if (n.Value == targetVal && n.Room == null)
+                {
+                    r.AddNode(n);
+                   
+                    nodesToFill.Push(nodeMap[n.Address.x + 1, n.Address.y]);
+                    nodesToFill.Push(nodeMap[n.Address.x - 1, n.Address.y]);
+                    nodesToFill.Push(nodeMap[n.Address.x, n.Address.y + 1]);
+                    nodesToFill.Push(nodeMap[n.Address.x, n.Address.y - 1]);
+                }
+            }
+
+            breakCount++;
+
+            //if(breakCount == 1000)
+            //{
+            //    UnityEngine.Debug.LogError("Loop Broken. Room Size: " + r.Size.ToString());
+            //    break;
+            //}
+        }
+
+        return r;
+    }
 }
+
+

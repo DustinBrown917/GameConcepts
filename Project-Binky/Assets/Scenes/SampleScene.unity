@@ -146,7 +146,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
@@ -184,7 +184,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 84.5, y: 63.5, z: -10}
+  m_LocalPosition: {x: 63.5, y: 63.5, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -219,7 +219,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   repeat: -1
-  scale: 5
+  scale: 8
   octaves: 3
   persistence: 0.7
   steps:
@@ -235,9 +235,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 548e330fd8c18934f8ad78cc8eb8303e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 170
-  height: 128
-  closingLayers: 4
+  width: 64
+  height: 64
+  closingLayers: 2
+  minRoomSize: 25
   wallTile: {fileID: 1477031517158980, guid: f2637ddb37346a14381167a4b84db1b5, type: 2}
   floorTile: {fileID: 1627453144770038, guid: c026a6c2a258203448cc713b73a95e68, type: 2}
 --- !u!4 &901235629
