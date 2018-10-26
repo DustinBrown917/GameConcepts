@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4942d2be00bc2d74284f934c383ae9dc, type: 3}
+  m_Name: ComputerPlayerPool
+  m_EditorClassIdentifier: 
+  troops:
+  - {fileID: 1232595440874696, guid: 04ce0c19203538545a7914f962e58767, type: 2}

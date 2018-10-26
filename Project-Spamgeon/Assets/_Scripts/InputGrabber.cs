@@ -36,10 +36,12 @@ public class InputGrabber : MonoBehaviour {
         if (Input.GetKeyDown(playerKeys[0]))
         {
             StartSelectionTimer(Players.SINGLE);
-        } else if (Input.GetKeyDown(playerKeys[1]))
+        }
+        if (Input.GetKeyDown(playerKeys[1]))
         {
             StartSelectionTimer(Players.FIRST);
-        } else if (Input.GetKeyDown(playerKeys[2]))
+        }
+        if (Input.GetKeyDown(playerKeys[2]))
         {
             StartSelectionTimer(Players.SECOND);
         }
@@ -105,7 +107,7 @@ public class InputGrabber : MonoBehaviour {
             handler(this, t);
         }
 
-        Debug.Log("Tab Event for " + t.player.ToString());
+        //Debug.Log("Tab Event for " + t.player.ToString());
     }
     #endregion
 
@@ -131,15 +133,10 @@ public class InputGrabber : MonoBehaviour {
             handler(this, s);
         }
 
-        Debug.Log("Select Event for " + s.player.ToString());
+        //Debug.Log("Select Event for " + s.player.ToString());
     }
     #endregion
 
 }
 
-public enum Players
-{
-    SINGLE,
-    FIRST,
-    SECOND
-}
+

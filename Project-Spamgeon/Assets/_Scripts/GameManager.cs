@@ -11,7 +11,54 @@ public class GameManager : MonoBehaviour {
     private static int numOfPlayers_ = 1;
     public static int NumOfPlayers { get { return numOfPlayers_; } }
 
+    private static int currentDungeonDepth_ = 1;
+    public static int CurrentDungeonDepth { get { return currentDungeonDepth_; } }
+
     private GameStates currentState;
+    [SerializeField] private Player leftPlayer;
+    [SerializeField] private Player rightPlayer;
+    [SerializeField] private TroopPool[] troopPools = new TroopPool[4];
+
+
+
+    /************************************************************************************/
+    /********************************* UNITY BEHAVIOURS *********************************/
+    /************************************************************************************/
+
+    private void Awake()
+    {
+        if(instance_ != null && instance_ != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance_ = this;
+    }
+
+    // Use this for initialization
+    void Start () {
+        leftPlayer.ChangePlayerType(Players.FIRST);
+        rightPlayer.ChangePlayerType(Players.SECOND);
+        StartCoroutine(DEBUG_DELAY());
+	}
+	
+    private IEnumerator DEBUG_DELAY()
+    {
+        yield return new WaitForSeconds(1.0f);
+        ChangeGameState(GameStates.PRE_BATTLE);
+
+        yield return new WaitForSeconds(1.0f);
+        ChangeGameState(GameStates.BATTLE);
+    }
+
+	// Update is called once per frame
+	void Update () {
+		
+	}
+
+    /************************************************************************************/
+    /************************************ BEHAVIOURS ************************************/
+    /************************************************************************************/
 
     public static GameStates GetCurrentState()
     {
@@ -26,34 +73,16 @@ public class GameManager : MonoBehaviour {
         instance_.lChangeGameState(state);
     }
 
-
-    /************************************************************************************/
-    /********************************* UNITY BEHAVIOURS *********************************/
-    /************************************************************************************/
-
-    private void Awake()
+    public static TroopPool GetPlayerTroopPool(Players playerType)
     {
-        if(instance_ != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        instance_ = this;
+        if (!IsInitialized()) { return null; }
+        return Instance.troopPools[(int)playerType];
     }
 
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    /************************************************************************************/
-    /************************************ BEHAVIOURS ************************************/
-    /************************************************************************************/
+    public static void ResetDungeonDepth()
+    {
+        currentDungeonDepth_ = 1;
+    }
 
     private static bool IsInitialized()
     {
@@ -111,6 +140,5 @@ public enum GameStates
     PRE_BATTLE,
     BATTLE,
     POST_BATTLE,
-    VICTORY,
-    DEFEAT
+    BATTLE_SUMMARY
 }
