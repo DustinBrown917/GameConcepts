@@ -17,6 +17,7 @@ public class InputGrabber : MonoBehaviour {
     [SerializeField] private KeyCode[] playerKeys;
     private Coroutine[] timerCoroutines;
     [SerializeField] private float timeToSelect = 1.0f;
+    public float TimeToSelect { get { return timeToSelect; } }
 
     private void Awake()
     {

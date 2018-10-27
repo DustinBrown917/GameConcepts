@@ -37,9 +37,7 @@ public class GameManager : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        leftPlayer.ChangePlayerType(Players.FIRST);
-        rightPlayer.ChangePlayerType(Players.SECOND);
-        StartCoroutine(DEBUG_DELAY());
+        
 	}
 	
     private IEnumerator DEBUG_DELAY()
