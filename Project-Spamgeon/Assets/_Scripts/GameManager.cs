@@ -8,8 +8,8 @@ public class GameManager : MonoBehaviour {
     private static GameManager instance_;
     public static GameManager Instance { get { return instance_; } }
 
-    private static int numOfPlayers_ = 1;
-    public static int NumOfPlayers { get { return numOfPlayers_; } }
+    private static byte numOfPlayers_ = 1;
+    public static byte NumOfPlayers { get { return numOfPlayers_; } }
 
     private static int currentDungeonDepth_ = 1;
     public static int CurrentDungeonDepth { get { return currentDungeonDepth_; } }
@@ -49,14 +49,24 @@ public class GameManager : MonoBehaviour {
         ChangeGameState(GameStates.BATTLE);
     }
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
     /************************************************************************************/
     /************************************ BEHAVIOURS ************************************/
     /************************************************************************************/
+
+    public static void SetNumOfPlayers(byte num)
+    {
+        if(GetCurrentState() != GameStates.MENU_SCREENS || numOfPlayers_ == num || num == 0) { return; }
+
+        if(num == 1)
+        {
+            Instance.leftPlayer.ChangePlayerType(Players.SINGLE);
+            Instance.rightPlayer.ChangePlayerType(Players.COMPUTER);
+        } else
+        {
+            Instance.leftPlayer.ChangePlayerType(Players.FIRST);
+            Instance.rightPlayer.ChangePlayerType(Players.SECOND);
+        }
+    }
 
     public static GameStates GetCurrentState()
     {
@@ -80,6 +90,18 @@ public class GameManager : MonoBehaviour {
     public static void ResetDungeonDepth()
     {
         currentDungeonDepth_ = 1;
+    }
+
+    public static Player GetLeftPlayer()
+    {
+        if (!IsInitialized()) { return null; }
+        return instance_.leftPlayer;
+    }
+
+    public static Player GetRightPlayer()
+    {
+        if (!IsInitialized()) { return null; }
+        return instance_.rightPlayer;
     }
 
     private static bool IsInitialized()
@@ -134,7 +156,7 @@ public class GameManager : MonoBehaviour {
 public enum GameStates
 {
     INVALID,
-    START_SREEN,
+    MENU_SCREENS,
     PRE_BATTLE,
     BATTLE,
     POST_BATTLE,

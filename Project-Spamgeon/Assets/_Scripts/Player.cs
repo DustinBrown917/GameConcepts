@@ -28,9 +28,8 @@ public class Player : MonoBehaviour {
         switch (e.newState)
         {
             case GameStates.PRE_BATTLE:
-                //If computer, generate new line of activeTroops
-                //if(playerType == Players.COMPUTER) { GenerateActiveTroops(5); }
-                GenerateActiveTroops(5);
+                if(playerType == Players.COMPUTER) { GenerateActiveTroops(5); }
+                //GenerateActiveTroops(5);
                 DeployActiveTroops();
                 break;
             case GameStates.BATTLE:
@@ -71,12 +70,19 @@ public class Player : MonoBehaviour {
 
     public Troop GetRandomTroopFromPool()
     {
-        return Instantiate(troopPool.GetRandomTroop()).GetComponent<Troop>();
+        return troopPool.GetRandomTroop().GetComponent<Troop>();
+    }
+
+    public void InstantiateTroop(Troop t)
+    {
+        Instantiate(t.gameObject);
     }
 
     public void AddActiveTroop(Troop t)
     {
         if(activeTroops.Count >= spawnPoints.Count) { return; }
+
+        InstantiateTroop(t);
 
         t.SetOwner(this);
         activeTroops.Add(t);

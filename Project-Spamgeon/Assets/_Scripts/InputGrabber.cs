@@ -8,9 +8,9 @@ public class InputGrabber : MonoBehaviour {
     private static InputGrabber instance_;
     public static InputGrabber Instance { get { return instance_; } }
 
-    public float SinglePlayerSelectionTime { get { return playerTimers[(int)Players.SINGLE]; } }
-    public float FirstPlayerSelectionTime { get { return playerTimers[(int)Players.FIRST]; } }
-    public float SecondPlayerSelectionTime { get { return playerTimers[(int)Players.SECOND]; } }
+    //public float SinglePlayerSelectionTime { get { return playerTimers[(int)Players.SINGLE]; } }
+    //public float FirstPlayerSelectionTime { get { return playerTimers[(int)Players.FIRST]; } }
+    //public float SecondPlayerSelectionTime { get { return playerTimers[(int)Players.SECOND]; } }
 
     [Header("Player Data"), Tooltip("0 = Single Player, 1 = First Player, 2 = Second Player")]
     [SerializeField] private float[] playerTimers;
@@ -37,15 +37,23 @@ public class InputGrabber : MonoBehaviour {
         if (Input.GetKeyDown(playerKeys[0]))
         {
             StartSelectionTimer(Players.SINGLE);
+            OnInputEventStart(new InputEventStartArgs(Players.SINGLE));
         }
         if (Input.GetKeyDown(playerKeys[1]))
         {
             StartSelectionTimer(Players.FIRST);
+            OnInputEventStart(new InputEventStartArgs(Players.FIRST));
         }
         if (Input.GetKeyDown(playerKeys[2]))
         {
             StartSelectionTimer(Players.SECOND);
+            OnInputEventStart(new InputEventStartArgs(Players.SECOND));
         }
+    }
+
+    public float GetSelectionTime(Players timer)
+    {
+        return playerTimers[(int)timer];
     }
 
     private void StartSelectionTimer(Players player)
@@ -138,6 +146,32 @@ public class InputGrabber : MonoBehaviour {
     }
     #endregion
 
+
+    #region InputEventStart Event
+    public event EventHandler<InputEventStartArgs> InputEventStart;
+
+    public class InputEventStartArgs : EventArgs
+    {
+        public Players player;
+
+        public InputEventStartArgs(Players p)
+        {
+            player = p;
+        }
+    }
+
+    private void OnInputEventStart(InputEventStartArgs s)
+    {
+        EventHandler<InputEventStartArgs> handler = InputEventStart;
+
+        if (handler != null)
+        {
+            handler(this, s);
+        }
+
+        //Debug.Log("Select Event for " + s.player.ToString());
+    }
+    #endregion
 }
 
 
