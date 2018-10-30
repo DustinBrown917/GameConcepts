@@ -8,13 +8,13 @@ public class GameManager : MonoBehaviour {
     private static GameManager instance_;
     public static GameManager Instance { get { return instance_; } }
 
-    private static byte numOfPlayers_ = 1;
+    private static byte numOfPlayers_ = 0;
     public static byte NumOfPlayers { get { return numOfPlayers_; } }
 
     private static int currentDungeonDepth_ = 1;
     public static int CurrentDungeonDepth { get { return currentDungeonDepth_; } }
 
-    private GameStates currentState;
+    [SerializeField] private GameStates currentState;
     [SerializeField] private Player leftPlayer;
     [SerializeField] private Player rightPlayer;
     [SerializeField] private TroopPool[] troopPools = new TroopPool[4];
@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour {
             return;
         }
         instance_ = this;
+        currentState = GameStates.MENU_SCREENS;
     }
 
     // Use this for initialization
@@ -55,6 +56,7 @@ public class GameManager : MonoBehaviour {
 
     public static void SetNumOfPlayers(byte num)
     {
+        
         if(GetCurrentState() != GameStates.MENU_SCREENS || numOfPlayers_ == num || num == 0) { return; }
 
         if(num == 1)
@@ -125,6 +127,11 @@ public class GameManager : MonoBehaviour {
         currentState = state;
 
         OnGameStateChanged(args);
+    }
+
+    public void lChangeNumOfPlayers(int n)
+    {
+        SetNumOfPlayers((byte)n);
     }
 
     /************************************************************************************/

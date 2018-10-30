@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class SelectorMenu : MonoBehaviour {
 
     [SerializeField] protected List<Selectable> selectables;
-    private SelectionMeter selectionMeter;
+    [SerializeField] private SelectionMeter selectionMeter;
     [SerializeField] private AudioClip focusNoise;
     [SerializeField] private AudioClip selectNoise;
     [SerializeField] protected Players playerToListenTo;
@@ -76,8 +76,6 @@ public class SelectorMenu : MonoBehaviour {
 
     protected IEnumerator FillInputMeter()
     {
-        selectionMeter = selectables[currentlySelectedIndex_].SelectionSlider;
-
         while(selectionMeter.Value < 1)
         {
             selectionMeter.Value = InputGrabber.Instance.GetSelectionTime(playerToListenTo) / InputGrabber.Instance.TimeToSelect;

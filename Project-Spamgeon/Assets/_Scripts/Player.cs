@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,9 @@ public class Player : MonoBehaviour {
     [SerializeField] private Players playerType;
 
     [SerializeField] private PortraitHolder portraitHolder;
+
+    private Coroutine cr_ComputerEnergyDistrubution;
+    [SerializeField] private float computerEnergyDistributionFrequency = 0.25f;
 
 	// Use this for initialization
 	protected void Start () {
@@ -28,22 +32,44 @@ public class Player : MonoBehaviour {
         switch (e.newState)
         {
             case GameStates.PRE_BATTLE:
-                if(playerType == Players.COMPUTER) { GenerateActiveTroops(5); }
-                //GenerateActiveTroops(5);
+                if(playerType == Players.COMPUTER) {
+                    GenerateActiveTroops(UnityEngine.Random.Range(1, Mathf.Clamp(GameManager.CurrentDungeonDepth/2, 1, 5)));
+                }
                 DeployActiveTroops();
                 break;
             case GameStates.BATTLE:
                 AssignTargetsToAll();
                 HookUpInputGrabber();
+
+                if(playerType == Players.COMPUTER)
+                {
+                    CoroutineManager.BeginCoroutine(ComputerEnergyDistribution(), ref cr_ComputerEnergyDistrubution, this);
+                }
                 break;
             case GameStates.POST_BATTLE:
                 UnhookInputGrabber();
+                if(playerType == Players.COMPUTER)
+                {
+                    CoroutineManager.HaltCoroutine(ref cr_ComputerEnergyDistrubution, this);
+                }
                 break;
             case GameStates.BATTLE_SUMMARY:
                 
                 break;
             default:
                 break;
+        }
+    }
+
+    private IEnumerator ComputerEnergyDistribution()
+    {
+        float frequency = computerEnergyDistributionFrequency - Mathf.Clamp(GameManager.CurrentDungeonDepth * 0.01f, 0.1f, 99.0f);
+        while (true){
+            foreach(Troop t in activeTroops)
+            {
+                t.AddEnergy();
+            }
+            yield return new WaitForSeconds(frequency);
         }
     }
 
@@ -73,16 +99,16 @@ public class Player : MonoBehaviour {
         return troopPool.GetRandomTroop().GetComponent<Troop>();
     }
 
-    public void InstantiateTroop(Troop t)
+    public Troop InstantiateTroop(Troop troopPrefab)
     {
-        Instantiate(t.gameObject);
+        return Instantiate(troopPrefab.gameObject).GetComponent<Troop>();
     }
 
     public void AddActiveTroop(Troop t)
     {
         if(activeTroops.Count >= spawnPoints.Count) { return; }
 
-        InstantiateTroop(t);
+        t = InstantiateTroop(t);
 
         t.SetOwner(this);
         activeTroops.Add(t);
@@ -134,6 +160,10 @@ public class Player : MonoBehaviour {
     {
         t.Death -= Troop_Death;
         activeTroops.Remove(t);
+        if(activeTroops.Count == 0)
+        {
+            OnNoMoreTroopsLeft(new NoMoreTroopsLeftArgs(this));
+        }
     }
 
     private void HookUpInputGrabber()
@@ -160,7 +190,29 @@ public class Player : MonoBehaviour {
         }
     }
 
+    public event EventHandler<NoMoreTroopsLeftArgs> NoMoreTroopsLeft;
 
+    public class NoMoreTroopsLeftArgs : EventArgs
+    {
+        public Player player;
+
+        public NoMoreTroopsLeftArgs(Player p)
+        {
+            player = p;
+        }
+    }
+
+    private void OnNoMoreTroopsLeft(NoMoreTroopsLeftArgs args)
+    {
+        EventHandler<NoMoreTroopsLeftArgs> handler = NoMoreTroopsLeft;
+
+        Debug.Log(this.gameObject.name + " defeated!");
+
+        if(handler != null)
+        {
+            handler(this, args);
+        }
+    }
 }
 
 public enum Players

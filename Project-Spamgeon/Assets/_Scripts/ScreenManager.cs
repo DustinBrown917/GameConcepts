@@ -1,8 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ScreenManager : MonoBehaviour {
+
+    private static ScreenManager instance_;
+    public static ScreenManager Instance { get { return instance_; } }
 
     [SerializeField] private ScreenWrapper[] screens;
 
@@ -10,21 +14,13 @@ public class ScreenManager : MonoBehaviour {
     private MenuScreen screenLeaving;
     private MenuScreen screenComing;
 
+    private bool screenLeavingTransitioning = false;
+    private bool screenComingTransitioning = false;
+
     private void Awake()
     {
-        
+        instance_ = this;
     }
-
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
 
     public void TransitionToScreen(int index)
     {
@@ -33,6 +29,7 @@ public class ScreenManager : MonoBehaviour {
 
         if(currentScreen != null)
         {
+            screenLeavingTransitioning = true;
             screenLeaving = currentScreen;
             currentScreen = null;
             screenLeaving.TransitionComplete += ScreenLeaving_TransitionComplete;
@@ -41,10 +38,14 @@ public class ScreenManager : MonoBehaviour {
 
         if(newScreen != null)
         {
+            screenComingTransitioning = true;
             screenComing = newScreen;
             screenComing.gameObject.SetActive(true);
             screenComing.TransitionComplete += ScreenComing_TransitionComplete;
             screenComing.FadeIn();
+        } else
+        {
+            GameManager.ChangeGameState(GameStates.PRE_BATTLE);
         }
 
     }
@@ -54,6 +55,7 @@ public class ScreenManager : MonoBehaviour {
         e.screen.TransitionComplete -= ScreenComing_TransitionComplete;
         currentScreen = screenComing;
         screenComing = null;
+        screenComingTransitioning = false;
     }
 
     private void ScreenLeaving_TransitionComplete(object sender, MenuScreen.TransitionCompleteArgs e)
@@ -61,6 +63,11 @@ public class ScreenManager : MonoBehaviour {
         e.screen.TransitionComplete -= ScreenLeaving_TransitionComplete;
         e.screen.gameObject.SetActive(false);
         screenLeaving = null;
+        screenLeavingTransitioning = false;
+        if(GameManager.GetCurrentState() == GameStates.PRE_BATTLE)
+        {
+            GameManager.ChangeGameState(GameStates.BATTLE);
+        }
     }
 
     private MenuScreen GetScreen(ScreenTypes screen)
@@ -74,6 +81,18 @@ public class ScreenManager : MonoBehaviour {
         }
 
         return null;
+    }
+
+    public event EventHandler TransitionsDone;
+    
+    private void OnTranstionsDone()
+    {
+        EventHandler handler = TransitionsDone;
+
+        if(handler!= null)
+        {
+            handler(this, EventArgs.Empty);
+        }
     }
 }
 

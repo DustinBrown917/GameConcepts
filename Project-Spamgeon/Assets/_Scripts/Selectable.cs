@@ -8,42 +8,53 @@ using UnityEngine.UI;
 
 public class Selectable : MonoBehaviour {
 
-    [SerializeField] private SelectionMeter selectionMeter_;
-    public SelectionMeter SelectionSlider { get { return selectionMeter_; } }
-    [SerializeField] private Outline focusOutline;
-    [SerializeField] private Color selectedColor;
-    private Color defaultOutlineColor;
-    public bool HasFocus { get { return focusOutline.enabled; } }
+    [SerializeField] private Behaviour[] focusBehaviours;
+    [SerializeField] private Behaviour[] selectedBehaviours;
+    private bool hasFocus_ = false;
+    public bool HasFocus { get { return hasFocus_; } }
 
     public UnityEvent OnSelect;
 
 	private void Awake () {
-		if(focusOutline == null)
-        {
-            focusOutline = GetComponent<Outline>();
-        }
-        defaultOutlineColor = focusOutline.effectColor;
-        focusOutline.enabled = false;
+        SetSelectedBehaviourEnabled(false);
+        SetFocusBehaviourEnabled(false);
 	}
 
     public void Focus()
     {
-        focusOutline.enabled = true;
-        focusOutline.effectColor = defaultOutlineColor;
+        SetFocusBehaviourEnabled(true);
         OnFocusReceived();
     }
 
     public void Defocus()
     {
-        focusOutline.enabled = false;
+        SetFocusBehaviourEnabled(false);
         OnFocusLost();
     }
 
     public void Select()
     {
-        focusOutline.effectColor = selectedColor;
+        SetSelectedBehaviourEnabled(true);
         OnSelect.Invoke();
     }
+
+    private void SetFocusBehaviourEnabled(bool b)
+    {
+        hasFocus_ = b;
+        for(int i = 0; i < focusBehaviours.Length; i++)
+        {
+            focusBehaviours[i].enabled = b;
+        }
+    }
+
+    private void SetSelectedBehaviourEnabled(bool b)
+    {
+        for (int i = 0; i < selectedBehaviours.Length; i++)
+        {
+            selectedBehaviours[i].enabled = b;
+        }
+    }
+
 
     /************************************************************************************/
     /************************************** EVENTS **************************************/

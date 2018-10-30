@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -45,6 +46,20 @@ public class TroopSelectorMenu : SelectorMenu {
             {
                 GameManager.GetRightPlayer().AddActiveTroop(troopSelectorPortrait.Troop);
             }
+
+            OnTroopSelected();
+        }
+    }
+
+    public event EventHandler TroopSelected;
+
+    private void OnTroopSelected()
+    {
+        EventHandler handler = TroopSelected;
+
+        if (handler != null)
+        {
+            handler(this, EventArgs.Empty);
         }
     }
 }
