@@ -14,12 +14,9 @@ public class GameManager : MonoBehaviour {
     private static int currentDungeonDepth_ = 1;
     public static int CurrentDungeonDepth { get { return currentDungeonDepth_; } }
 
-    [SerializeField] private GameStates currentState;
     [SerializeField] private Player leftPlayer;
     [SerializeField] private Player rightPlayer;
     [SerializeField] private TroopPool[] troopPools = new TroopPool[4];
-
-
 
     /************************************************************************************/
     /********************************* UNITY BEHAVIOURS *********************************/
@@ -33,21 +30,17 @@ public class GameManager : MonoBehaviour {
             return;
         }
         instance_ = this;
-        currentState = GameStates.MENU_SCREENS;
+        GameStateHandler.ChangeState(GameStateHandler.States.MAIN);
     }
 
     // Use this for initialization
     void Start () {
-        
+        rightPlayer.NoMoreTroopsLeft += Player_NoMoreTroopsLeft;
 	}
-	
-    private IEnumerator DEBUG_DELAY()
-    {
-        yield return new WaitForSeconds(1.0f);
-        ChangeGameState(GameStates.PRE_BATTLE);
 
-        yield return new WaitForSeconds(1.0f);
-        ChangeGameState(GameStates.BATTLE);
+    private void Player_NoMoreTroopsLeft(object sender, Player.NoMoreTroopsLeftArgs e)
+    {
+        GameStateHandler.ChangeState(GameStateHandler.States.POST_BATTLE);
     }
 
     /************************************************************************************/
@@ -57,7 +50,9 @@ public class GameManager : MonoBehaviour {
     public static void SetNumOfPlayers(byte num)
     {
         
-        if(GetCurrentState() != GameStates.MENU_SCREENS || numOfPlayers_ == num || num == 0) { return; }
+        if(numOfPlayers_ == num || num == 0) { return; }
+
+        numOfPlayers_ = num;
 
         if(num == 1)
         {
@@ -68,19 +63,6 @@ public class GameManager : MonoBehaviour {
             Instance.leftPlayer.ChangePlayerType(Players.FIRST);
             Instance.rightPlayer.ChangePlayerType(Players.SECOND);
         }
-    }
-
-    public static GameStates GetCurrentState()
-    {
-        if (!IsInitialized()) { return GameStates.INVALID; }
-        return instance_.currentState;
-    }
-
-    public static void ChangeGameState(GameStates state)
-    {
-        if (!IsInitialized()) { return; }
-
-        instance_.lChangeGameState(state);
     }
 
     public static TroopPool GetPlayerTroopPool(Players playerType)
@@ -116,19 +98,6 @@ public class GameManager : MonoBehaviour {
         return true;
     }
 
-    private void lChangeGameState(GameStates state)
-    {
-        if(state == currentState) { return; }
-
-        GameStateChangedArgs args = new GameStateChangedArgs();
-        args.previousState = currentState;
-        args.newState = state;
-
-        currentState = state;
-
-        OnGameStateChanged(args);
-    }
-
     public void lChangeNumOfPlayers(int n)
     {
         SetNumOfPlayers((byte)n);
@@ -138,34 +107,5 @@ public class GameManager : MonoBehaviour {
     /************************************** EVENTS **************************************/
     /************************************************************************************/
 
-    #region GameStateChanged Event
-    public static event EventHandler<GameStateChangedArgs> GameStateChanged;
-
-    public class GameStateChangedArgs : EventArgs
-    {
-        public GameStates previousState;
-        public GameStates newState;
-    }
-
-    private static void OnGameStateChanged(GameStateChangedArgs args)
-    {
-        EventHandler<GameStateChangedArgs> handler = GameStateChanged;
-
-        if(handler != null)
-        {
-            handler(typeof(GameManager), args);
-        }
-    }
-    #endregion
 }
 
-
-public enum GameStates
-{
-    INVALID,
-    MENU_SCREENS,
-    PRE_BATTLE,
-    BATTLE,
-    POST_BATTLE,
-    BATTLE_SUMMARY
-}

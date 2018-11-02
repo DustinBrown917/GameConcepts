@@ -8,10 +8,6 @@ public class InputGrabber : MonoBehaviour {
     private static InputGrabber instance_;
     public static InputGrabber Instance { get { return instance_; } }
 
-    //public float SinglePlayerSelectionTime { get { return playerTimers[(int)Players.SINGLE]; } }
-    //public float FirstPlayerSelectionTime { get { return playerTimers[(int)Players.FIRST]; } }
-    //public float SecondPlayerSelectionTime { get { return playerTimers[(int)Players.SECOND]; } }
-
     [Header("Player Data"), Tooltip("0 = Single Player, 1 = First Player, 2 = Second Player")]
     [SerializeField] private float[] playerTimers;
     [SerializeField] private KeyCode[] playerKeys;
@@ -145,7 +141,6 @@ public class InputGrabber : MonoBehaviour {
         //Debug.Log("Select Event for " + s.player.ToString());
     }
     #endregion
-
 
     #region InputEventStart Event
     public event EventHandler<InputEventStartArgs> InputEventStart;

@@ -22,6 +22,35 @@ public class ScreenManager : MonoBehaviour {
         instance_ = this;
     }
 
+    private void Start()
+    {
+        GameManager.GameStateChanged += GameManager_GameStateChanged;
+    }
+
+    private void GameManager_GameStateChanged(object sender, GameManager.GameStateChangedArgs e)
+    {
+        
+        if(e.newState == GameStates.POST_BATTLE)
+        {
+            if (GameManager.NumOfPlayers == 1)
+            {
+                
+                if (GameManager.GetLeftPlayer().ActiveTroopCount > 0)
+                {
+                    TransitionToScreen((int)ScreenTypes.VICTORY_SINGLE);
+                } else
+                {
+                    TransitionToScreen((int)ScreenTypes.DEFEAT_SINGLE);
+                }
+                
+            } else
+            {
+                //Multi player stuff
+            }
+            
+        }
+    }
+
     public void TransitionToScreen(int index)
     {
         MenuScreen newScreen = GetScreen((ScreenTypes)index);
@@ -47,7 +76,6 @@ public class ScreenManager : MonoBehaviour {
         {
             GameManager.ChangeGameState(GameStates.PRE_BATTLE);
         }
-
     }
 
     private void ScreenComing_TransitionComplete(object sender, MenuScreen.TransitionCompleteArgs e)

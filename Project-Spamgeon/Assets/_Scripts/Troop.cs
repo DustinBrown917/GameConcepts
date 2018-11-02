@@ -64,35 +64,41 @@ public class Troop : MonoBehaviour {
 
     private void Start()
     {
-        GameManager.GameStateChanged += GameManager_GameStateChanged;
+        GameStateHandler.StateChanged += GameStateHandler_StateChanged;
         
     }
+
+
 
     private void OnDestroy()
     {
         owner = null;
-        GameManager.GameStateChanged -= GameManager_GameStateChanged;
+        GameStateHandler.StateChanged -= GameStateHandler_StateChanged;
     }
 
     /************************************************************************************/
     /************************************ BEHAVIOURS ************************************/
     /************************************************************************************/
 
-    private void GameManager_GameStateChanged(object sender, GameManager.GameStateChangedArgs e)
+    private void GameStateHandler_StateChanged(object sender, GameStateHandler.StateChangedArgs e)
     {
-        switch (e.newState)
+        switch (e.Current)
         {
-            case GameStates.PRE_BATTLE:
+            case GameStateHandler.States.PRE_BATTLE:
                 ResetTroop();
                 break;
-            case GameStates.BATTLE:
+            case GameStateHandler.States.BATTLE:
                 RequestTarget();
                 break;
-            case GameStates.POST_BATTLE:
+            case GameStateHandler.States.POST_BATTLE:
                 target = null;
                 break;
-            case GameStates.BATTLE_SUMMARY:
+            case GameStateHandler.States.BATTLE_SUMMARY:
                 if (!isAlive) { Destroy(gameObject); }
+                break;
+            case GameStateHandler.States.MAIN:
+                Kill(false, false);
+                Destroy(gameObject);
                 break;
             default:
                 break;
@@ -169,16 +175,23 @@ public class Troop : MonoBehaviour {
         return true;
     }
 
-    public void Kill()
+    public void Kill(bool playSound = true, bool animate = true)
     {
         if(currentHealth_ != 0)
         {
             currentHealth_ = 0;
             OnHealthChanged();
         }
-        audioSource.clip = deathSound;
-        audioSource.Play();
-        animator.SetTrigger("Death");
+
+        if (playSound)
+        {
+            audioSource.clip = deathSound;
+            audioSource.Play();
+        }
+        if (animate)
+        {
+            animator.SetTrigger("Death");
+        }
         OnDeath();
     }
 
@@ -213,31 +226,6 @@ public class Troop : MonoBehaviour {
         graphic.transform.localPosition = defaultSpriteLocation;
         graphic.color = defaultColor;
     }
-
-
-    /*
-     * Pre-Battle:
-     * Reset health to max and energy to 0
-     */
-
-    /*
-     * Battle:
-     * Loop >>
-     * Find target if needed
-     * If target != null && target isAlive {attack target}
-     * if !target.IsAlive {target = null;}
-     * << Loop
-     */
-
-    /*
-     * Post-Battle:
-     * Clear target (for safety)
-     */
-
-    /*
-     * Postgame screen (victory or defeat)
-     * if(!isAlive) remove self
-     */
 
 
 

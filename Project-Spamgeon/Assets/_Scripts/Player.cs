@@ -6,6 +6,7 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
     [SerializeField] private List<Troop> activeTroops;
+    public int ActiveTroopCount{ get { return activeTroops.Count; } }
     [SerializeField] private TroopPool troopPool;
     [SerializeField] private List<GameObject> spawnPoints;
     [SerializeField] private Player opponent;
@@ -19,43 +20,47 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	protected void Start () {
-        GameManager.GameStateChanged += GameManager_GameStateChanged;
+        GameStateHandler.StateChanged += GameStateHandler_StateChanged;
 	}
 
     protected void OnDestroy()
     {
-        GameManager.GameStateChanged -= GameManager_GameStateChanged;
+        GameStateHandler.StateChanged -= GameStateHandler_StateChanged;
     }
 
-    protected void GameManager_GameStateChanged(object sender, GameManager.GameStateChangedArgs e)
+    private void GameStateHandler_StateChanged(object sender, GameStateHandler.StateChangedArgs e)
     {
-        switch (e.newState)
+        switch (e.Current)
         {
-            case GameStates.PRE_BATTLE:
-                if(playerType == Players.COMPUTER) {
-                    GenerateActiveTroops(UnityEngine.Random.Range(1, Mathf.Clamp(GameManager.CurrentDungeonDepth/2, 1, 5)));
+            case GameStateHandler.States.PRE_BATTLE:
+                if (playerType == Players.COMPUTER)
+                {
+                    GenerateActiveTroops(UnityEngine.Random.Range(1, Mathf.Clamp(GameManager.CurrentDungeonDepth / 2, 1, 5)));
                 }
                 DeployActiveTroops();
                 break;
-            case GameStates.BATTLE:
+
+            case GameStateHandler.States.BATTLE:
                 AssignTargetsToAll();
                 HookUpInputGrabber();
 
-                if(playerType == Players.COMPUTER)
+                if (playerType == Players.COMPUTER)
                 {
                     CoroutineManager.BeginCoroutine(ComputerEnergyDistribution(), ref cr_ComputerEnergyDistrubution, this);
                 }
                 break;
-            case GameStates.POST_BATTLE:
+
+            case GameStateHandler.States.POST_BATTLE:
                 UnhookInputGrabber();
-                if(playerType == Players.COMPUTER)
+                if (playerType == Players.COMPUTER)
                 {
                     CoroutineManager.HaltCoroutine(ref cr_ComputerEnergyDistrubution, this);
                 }
                 break;
-            case GameStates.BATTLE_SUMMARY:
-                
+
+            case GameStateHandler.States.BATTLE_SUMMARY:
                 break;
+
             default:
                 break;
         }
@@ -205,8 +210,6 @@ public class Player : MonoBehaviour {
     private void OnNoMoreTroopsLeft(NoMoreTroopsLeftArgs args)
     {
         EventHandler<NoMoreTroopsLeftArgs> handler = NoMoreTroopsLeft;
-
-        Debug.Log(this.gameObject.name + " defeated!");
 
         if(handler != null)
         {
