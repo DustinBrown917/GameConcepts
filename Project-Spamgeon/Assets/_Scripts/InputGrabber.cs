@@ -8,12 +8,16 @@ public class InputGrabber : MonoBehaviour {
     private static InputGrabber instance_;
     public static InputGrabber Instance { get { return instance_; } }
 
-    [Header("Player Data"), Tooltip("0 = Single Player, 1 = First Player, 2 = Second Player")]
     [SerializeField] private float[] playerTimers;
     [SerializeField] private KeyCode[] playerKeys;
     private Coroutine[] timerCoroutines;
     [SerializeField] private float timeToSelect = 1.0f;
     public float TimeToSelect { get { return timeToSelect; } }
+    private bool inputBlocked_ = false;
+    public bool InputBlocked { get { return inputBlocked_; } }
+    /*
+     * Need to set up an array that will store which players' input is blocked. 
+     */
 
     private void Awake()
     {
@@ -30,6 +34,8 @@ public class InputGrabber : MonoBehaviour {
 
     private void Update()
     {
+        if (inputBlocked_) { return; }
+
         if (Input.GetKeyDown(playerKeys[0]))
         {
             StartSelectionTimer(Players.SINGLE);
@@ -81,7 +87,13 @@ public class InputGrabber : MonoBehaviour {
         }
         playerTimers[playerIndex] = 0;
         container = null;
+    }
 
+    private void CancelInput(Players player)
+    {
+        StopCoroutine(timerCoroutines[(int)player]);
+        timerCoroutines[(int)player] = null;
+        playerTimers[(int)player] = 0;
     }
 
 

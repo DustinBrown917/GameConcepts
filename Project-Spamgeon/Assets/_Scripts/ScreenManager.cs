@@ -25,6 +25,12 @@ public class ScreenManager : MonoBehaviour {
     private void Start()
     {
         GameManager.GameStateChanged += GameManager_GameStateChanged;
+        GameStateHandler.StateChanged += GameStateHandler_StateChanged;
+    }
+
+    private void GameStateHandler_StateChanged(object sender, GameStateHandler.StateChangedArgs e)
+    {
+        //Change to the appropriate screen for each state.
     }
 
     private void GameManager_GameStateChanged(object sender, GameManager.GameStateChangedArgs e)

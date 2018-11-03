@@ -14,13 +14,13 @@ public class TroopPortrait : MonoBehaviour {
     private Troop troop;
 	
 	void Start () {
-        GameManager.GameStateChanged += GameManager_GameStateChanged;
+        GameStateHandler.StateChanged += GameStateHandler_StateChanged;
         gameObject.SetActive(false);
 	}
 
-    private void GameManager_GameStateChanged(object sender, GameManager.GameStateChangedArgs e)
+    private void GameStateHandler_StateChanged(object sender, GameStateHandler.StateChangedArgs e)
     {
-        if(e.newState == GameStates.BATTLE_SUMMARY)
+        if (e.Current == GameStateHandler.States.BATTLE_SUMMARY)
         {
             ClearTroop();
             gameObject.SetActive(false);
