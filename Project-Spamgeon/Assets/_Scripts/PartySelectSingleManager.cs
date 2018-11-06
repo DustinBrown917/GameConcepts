@@ -13,7 +13,7 @@ public class PartySelectSingleManager : MonoBehaviour {
 
     private void TroopSelectorMenu_TroopSelected(object sender, System.EventArgs e)
     {
-        ScreenManager.Instance.TransitionToScreen(-1);
+        ScreenManager.Instance.TransitionToScreen("");
         troopSelectorMenu.UnHookFromInput();
     }
 

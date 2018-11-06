@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//Remove in favour of GameScreen
 [RequireComponent(typeof(CanvasGroup))]
-public class MenuScreen : MonoBehaviour {
+public class GameScreen : MonoBehaviour {
 
     private const float STANDARD_FADE_TIME = 0.5f;
 
     [SerializeField] private SelectorMenu[] selectorMenus;
+
+    public string Name { get { return gameObject.name; } }
 
     private CanvasGroup canvasGroup;
 
@@ -76,9 +79,9 @@ public class MenuScreen : MonoBehaviour {
 
     public class TransitionCompleteArgs : EventArgs
     {
-        public MenuScreen screen;
+        public GameScreen screen;
 
-        public TransitionCompleteArgs(MenuScreen s)
+        public TransitionCompleteArgs(GameScreen s)
         {
             screen = s;
         }
