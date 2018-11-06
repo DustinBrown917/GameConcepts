@@ -36,11 +36,12 @@ public class GameManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         rightPlayer.NoMoreTroopsLeft += Player_NoMoreTroopsLeft;
-	}
+        leftPlayer.NoMoreTroopsLeft += Player_NoMoreTroopsLeft;
+    }
 
     private void Player_NoMoreTroopsLeft(object sender, Player.NoMoreTroopsLeftArgs e)
     {
-        GameStateHandler.ChangeState(GameStateHandler.States.POST_BATTLE);
+        BattleManager.Instance.EndBattle();
     }
 
     /************************************************************************************/
@@ -102,6 +103,7 @@ public class GameManager : MonoBehaviour {
     {
         SetNumOfPlayers((byte)n);
     }
+
 
     /************************************************************************************/
     /************************************** EVENTS **************************************/

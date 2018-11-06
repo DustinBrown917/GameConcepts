@@ -47,6 +47,11 @@ public class TroopSelectorMenu : SelectorMenu {
                 GameManager.GetRightPlayer().AddActiveTroop(troopSelectorPortrait.Troop);
             }
 
+            if(GameManager.NumOfPlayers == 1)
+            {
+                BattleManager.Instance.IntroduceBattle();
+            }
+
             OnTroopSelected();
         }
     }

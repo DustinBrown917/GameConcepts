@@ -60,6 +60,7 @@ public class TroopPortrait : MonoBehaviour {
 
     public void ClearTroop()
     {
+        if(troop == null) { return; }
         troop.Death -= Troop_Death;
         troop.HealthChanged -= Troop_HealthChanged;
         troop.EnergyChanged -= Troop_EnergyChanged;

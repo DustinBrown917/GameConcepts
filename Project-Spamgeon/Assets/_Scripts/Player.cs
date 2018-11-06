@@ -209,6 +209,7 @@ public class Player : MonoBehaviour {
 
     private void OnNoMoreTroopsLeft(NoMoreTroopsLeftArgs args)
     {
+        Debug.Log(gameObject.name + " no more troops.");
         EventHandler<NoMoreTroopsLeftArgs> handler = NoMoreTroopsLeft;
 
         if(handler != null)

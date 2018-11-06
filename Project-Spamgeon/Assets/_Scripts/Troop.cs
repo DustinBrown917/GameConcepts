@@ -65,7 +65,6 @@ public class Troop : MonoBehaviour {
     private void Start()
     {
         GameStateHandler.StateChanged += GameStateHandler_StateChanged;
-        
     }
 
 
