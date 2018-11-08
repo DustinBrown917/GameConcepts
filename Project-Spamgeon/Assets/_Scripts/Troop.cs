@@ -96,8 +96,7 @@ public class Troop : MonoBehaviour {
                 if (!isAlive) { Destroy(gameObject); }
                 break;
             case GameStateHandler.States.MAIN:
-                Kill(false, false);
-                Destroy(gameObject);
+                CleanDestroy();
                 break;
             default:
                 break;
@@ -174,9 +173,9 @@ public class Troop : MonoBehaviour {
         return true;
     }
 
-    public void Kill(bool playSound = true, bool animate = true)
+    public void Kill(bool playSound = true, bool animate = true, bool passEvents = true)
     {
-        if(currentHealth_ != 0)
+        if(currentHealth_ != 0 && passEvents)
         {
             currentHealth_ = 0;
             OnHealthChanged();
@@ -191,7 +190,12 @@ public class Troop : MonoBehaviour {
         {
             animator.SetTrigger("Death");
         }
-        OnDeath();
+
+        if (passEvents)
+        {
+            OnDeath();
+        }
+        
     }
 
     public void ResetTroop()
@@ -201,6 +205,12 @@ public class Troop : MonoBehaviour {
         currentEnergy_ = 0.0f;
         OnHealthChanged();
         OnEnergyChanged();
+    }
+
+    public void CleanDestroy()
+    {
+        Kill(false, false, false);
+        Destroy(gameObject);
     }
 
     private IEnumerator DamageRumble()

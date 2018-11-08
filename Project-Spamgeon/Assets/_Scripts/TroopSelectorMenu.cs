@@ -34,19 +34,36 @@ public class TroopSelectorMenu : SelectorMenu {
     protected override void InputGrabber_SelectEvent(object sender, InputGrabber.SelectEventArgs e)
     {
         base.InputGrabber_SelectEvent(sender, e);
-
+        if(e.player != playerToListenTo) { return; }
         TroopSelectorPortrait troopSelectorPortrait = selectables[currentlySelectedIndex_].GetComponent<TroopSelectorPortrait>();
 
         if(troopSelectorPortrait != null)
         {
             if (forLeftPlayer)
             {
-                GameManager.GetLeftPlayer().AddActiveTroop(troopSelectorPortrait.Troop);
-            } else
-            {
-                GameManager.GetRightPlayer().AddActiveTroop(troopSelectorPortrait.Troop);
-            }
+                if (GameManager.GetLeftPlayer().ActiveTroopCount < 5 && troopSelectorPortrait.Adder)
+                {
+                    if (troopSelectorPortrait.Adder)
+                    {
+                        GameManager.GetLeftPlayer().AddActiveTroop(troopSelectorPortrait.Troop);
+                    } 
+                } else if (!troopSelectorPortrait.Adder)
+                {
+                    GameManager.GetLeftPlayer().RemoveActiveTroop(troopSelectorPortrait.Troop);
+                    Destroy(troopSelectorPortrait.Troop.gameObject);
+                }
+            } else {
+                if (GameManager.GetRightPlayer().ActiveTroopCount < 5 && troopSelectorPortrait.Adder)
+                {
 
+                    GameManager.GetRightPlayer().AddActiveTroop(troopSelectorPortrait.Troop);
+  
+                } else if(!troopSelectorPortrait.Adder)
+                {
+                    GameManager.GetRightPlayer().RemoveActiveTroop(troopSelectorPortrait.Troop);
+                    Destroy(troopSelectorPortrait.Troop.gameObject);
+                }
+            }
             if(GameManager.NumOfPlayers == 1)
             {
                 BattleManager.Instance.IntroduceBattle();

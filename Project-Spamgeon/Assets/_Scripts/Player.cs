@@ -115,9 +115,13 @@ public class Player : MonoBehaviour {
 
         t = InstantiateTroop(t);
 
+        NewTroopAddedArgs args = new NewTroopAddedArgs(this, t);
+
         t.SetOwner(this);
         activeTroops.Add(t);
         t.Death += Troop_Death;
+
+        OnNewTroopAdded(args);
     }
 
     public void GenerateActiveTroops(int count)
@@ -130,22 +134,28 @@ public class Player : MonoBehaviour {
         }
     }
 
-    public Troop GetActiveTroop()
+    public Troop GetRandomActiveTroop()
     {
         if(activeTroops.Count == 0) { return null; }
         return activeTroops[UnityEngine.Random.Range(0, activeTroops.Count)];
     }
 
+    public Troop GetActiveTroop(int index)
+    {
+        if(index < 0 || index >= activeTroops.Count) { return null; }
+        return activeTroops[index];
+    }
+
     public Troop GetOpponentActiveTroop()
     {
-        return opponent.GetActiveTroop();
+        return opponent.GetRandomActiveTroop();
     }
 
     private void AssignTargetsToAll()
     {
         for(int i = 0; i<activeTroops.Count; i++)
         {
-            activeTroops[i].AssignTarget(opponent.GetActiveTroop());
+            activeTroops[i].AssignTarget(opponent.GetRandomActiveTroop());
         }
     }
 
@@ -161,11 +171,15 @@ public class Player : MonoBehaviour {
         }
     }
 
-    private void RemoveActiveTroop(Troop t)
+    public void RemoveActiveTroop(Troop t)
     {
         t.Death -= Troop_Death;
         activeTroops.Remove(t);
-        if(activeTroops.Count == 0)
+
+        TroopRemovedArgs args = new TroopRemovedArgs(this, t);
+        OnTroopRemoved(args);
+
+        if(activeTroops.Count == 0 && GameStateHandler.CurrentState == GameStateHandler.States.BATTLE)
         {
             OnNoMoreTroopsLeft(new NoMoreTroopsLeftArgs(this));
         }
@@ -194,6 +208,61 @@ public class Player : MonoBehaviour {
             activeTroops[i].AddEnergy();
         }
     }
+
+
+
+
+    public event EventHandler<TroopRemovedArgs> TroopRemoved;
+
+    public class TroopRemovedArgs : EventArgs
+    {
+        public Player player;
+        public Troop AddedTroop;
+
+        public TroopRemovedArgs(Player p, Troop t)
+        {
+            player = p;
+            AddedTroop = t;
+        }
+    }
+
+    private void OnTroopRemoved(TroopRemovedArgs e)
+    {
+        EventHandler<TroopRemovedArgs> handler = TroopRemoved;
+
+        if (handler != null)
+        {
+            handler(this, e);
+        }
+    }
+
+
+
+    public event EventHandler<NewTroopAddedArgs> NewTroopAdded;
+
+    public class NewTroopAddedArgs : EventArgs
+    {
+        public Player player;
+        public Troop AddedTroop;
+
+        public NewTroopAddedArgs(Player p, Troop t)
+        {
+            player = p;
+            AddedTroop = t;
+        }
+    }
+
+    private void OnNewTroopAdded(NewTroopAddedArgs e)
+    {
+        EventHandler<NewTroopAddedArgs> handler = NewTroopAdded;
+
+        if(handler != null)
+        {
+            handler(this, e);
+        }
+    }
+
+
 
     public event EventHandler<NoMoreTroopsLeftArgs> NoMoreTroopsLeft;
 

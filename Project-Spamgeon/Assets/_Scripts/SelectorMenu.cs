@@ -92,16 +92,27 @@ public class SelectorMenu : MonoBehaviour {
     private void FocusNext()
     {
         selectables[currentlySelectedIndex_].Defocus();
-        currentlySelectedIndex_++;
-        if(currentlySelectedIndex_ >= selectables.Count)
-        {
-            currentlySelectedIndex_ = 0;
-        }
+        int safety = 0;
+        do {
+            currentlySelectedIndex_++;
+            if (currentlySelectedIndex_ >= selectables.Count) {
+                currentlySelectedIndex_ = 0;
+            }
+
+            safety++;
+            if(safety > selectables.Count + 1)
+            {
+                Debug.LogError("Safety is at " + safety.ToString() + ". Terminating Loop.");
+                break;
+            }
+        } while (!selectables[currentlySelectedIndex_].gameObject.activeSelf);
+        
         FocusOn(currentlySelectedIndex_);
     }
 
     private void FocusOn(int index)
     {
+        if(selectables.Count == 0) { return; }
         if(index < 0 || index > selectables.Count) { index = 0; }
         audioSource.clip = focusNoise;
         audioSource.Play();
@@ -133,10 +144,12 @@ public class SelectorMenu : MonoBehaviour {
     public void AddSelectable(Selectable s)
     {
         selectables.Add(s);
+        FocusOn(currentlySelectedIndex_);
     }
 
     public void RemoveSelectable(Selectable s)
     {
         selectables.Remove(s);
+        FocusOn(currentlySelectedIndex_);
     }
 }

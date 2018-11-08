@@ -9,6 +9,8 @@ public class TroopSelectorPortrait : Selectable {
     public Troop Troop { get { return troop_; } }
 
     [SerializeField] private Image image;
+    [SerializeField] private bool adder_ = true;
+    public bool Adder { get { return adder_; } }
 
 	public void SetTroop(Troop t)
     {
