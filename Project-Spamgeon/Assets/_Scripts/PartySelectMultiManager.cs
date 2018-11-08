@@ -17,6 +17,18 @@ public class PartySelectMultiManager : MonoBehaviour {
     private bool leftPlayerReady = false;
     private bool rightPlayerReady = false;
 
+    private void OnEnable()
+    {
+        UpdateLeftPlayerPortraits();
+        UpdateRightPlayerPortraits();
+
+        leftPlayerReady = false;
+        rightPlayerReady = false;
+
+        leftPlayerReadyText.text = "Not Ready";
+        rightPlayerReadyText.text = "Not Ready";
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -25,8 +37,7 @@ public class PartySelectMultiManager : MonoBehaviour {
         GameManager.GetLeftPlayer().TroopRemoved += LeftPlayer_TroopRemoved;
         GameManager.GetRightPlayer().TroopRemoved += RightPlayer_TroopRemoved;
 
-        UpdateLeftPlayerPortraits();
-        UpdateRightPlayerPortraits();
+        
     }
 
 

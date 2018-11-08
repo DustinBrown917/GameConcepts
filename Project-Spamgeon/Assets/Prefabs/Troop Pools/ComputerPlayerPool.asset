@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Name: ComputerPlayerPool
   m_EditorClassIdentifier: 
   troops:
-  - {fileID: 1232595440874696, guid: 04ce0c19203538545a7914f962e58767, type: 2}
+  - {fileID: 1555150025610138, guid: fc685a2feff72fa438d3d786fc99af25, type: 2}
+  - {fileID: 1555150025610138, guid: e0c2438818005be4d8cbfef3310fba66, type: 2}

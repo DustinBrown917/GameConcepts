@@ -49,8 +49,9 @@ public class TroopSelectorMenu : SelectorMenu {
                     } 
                 } else if (!troopSelectorPortrait.Adder)
                 {
+                    Troop t = troopSelectorPortrait.Troop;
                     GameManager.GetLeftPlayer().RemoveActiveTroop(troopSelectorPortrait.Troop);
-                    Destroy(troopSelectorPortrait.Troop.gameObject);
+                    t.CleanDestroy();
                 }
             } else {
                 if (GameManager.GetRightPlayer().ActiveTroopCount < 5 && troopSelectorPortrait.Adder)
@@ -60,8 +61,9 @@ public class TroopSelectorMenu : SelectorMenu {
   
                 } else if(!troopSelectorPortrait.Adder)
                 {
+                    Troop t = troopSelectorPortrait.Troop;
                     GameManager.GetRightPlayer().RemoveActiveTroop(troopSelectorPortrait.Troop);
-                    Destroy(troopSelectorPortrait.Troop.gameObject);
+                    t.CleanDestroy();
                 }
             }
             if(GameManager.NumOfPlayers == 1)

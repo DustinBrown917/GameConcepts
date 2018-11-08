@@ -96,7 +96,8 @@ public class Troop : MonoBehaviour {
                 if (!isAlive) { Destroy(gameObject); }
                 break;
             case GameStateHandler.States.MAIN:
-                CleanDestroy();
+                Kill(false, false);
+                Destroy(gameObject);
                 break;
             default:
                 break;

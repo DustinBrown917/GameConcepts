@@ -13,3 +13,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   troops:
   - {fileID: 1232595440874696, guid: 04ce0c19203538545a7914f962e58767, type: 2}
+  - {fileID: 1555150025610138, guid: e1778fa0f72c1814983b5ada7ddf7e8d, type: 2}
