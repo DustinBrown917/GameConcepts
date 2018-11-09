@@ -9,8 +9,11 @@ public class Troop : MonoBehaviour {
 
     [SerializeField] private int level_ = 1;
     public int Level { get { return level_; } }
-    [SerializeField] private int currentExp_;
+    [SerializeField] private float currentExp_;
+    public float CurrentExp { get { return currentExp_; } }
     public float ExperienceThreshold { get { return EXP_REQUIRED_PER_LEVEL * level_; } }
+
+    [SerializeField] private LevellingBias levellingBias;
 
     [SerializeField] private float maxHealth_;
     public float MaxHealth { get { return maxHealth_; } }
@@ -139,23 +142,38 @@ public class Troop : MonoBehaviour {
         if (!isAlive) { return; }
 
         currentEnergy_ += attackSpeed_;
-        if(currentEnergy_ > maxEnergy_)
-        {
-            if(target != null)
-            {
-                if (Attack())
-                {
+        if(currentEnergy_ > maxEnergy_) {
+            if(target != null) {
+                if (Attack()) {
                     currentEnergy_ = currentEnergy_ - maxEnergy_;
-                }
-                
+                }  
             }
-            else
-            {
+            else {
                 currentEnergy_ = maxEnergy_;
             }
         }
-
         OnEnergyChanged();
+    }
+
+    public void AddExperience(int exp)
+    {
+        currentExp_ += exp;
+        if(currentExp_ >= ExperienceThreshold)
+        {
+            currentExp_ -= ExperienceThreshold;
+            IncrementLevel();
+        }
+
+        Vector3 tempVec = transform.localScale;
+        tempVec.x *= -1;
+        transform.localScale = tempVec;
+    }
+
+    public void IncrementLevel()
+    {
+        level_++;
+        LevelUpArgs args = new LevelUpArgs(this, Level);
+        OnLevelUp(args);
     }
 
     private bool Attack()
@@ -243,6 +261,32 @@ public class Troop : MonoBehaviour {
     /************************************** EVENTS **************************************/
     /************************************************************************************/
 
+    #region LevelUp Event
+    public event EventHandler<LevelUpArgs> LevelUp;
+    
+    public class LevelUpArgs : EventArgs
+    {
+        public Troop troop;
+        public int newLevel;
+
+        public LevelUpArgs(Troop t, int newLevel_)
+        {
+            troop = t;
+            newLevel = newLevel_;
+        }
+    }
+
+    private void OnLevelUp(LevelUpArgs e)
+    {
+        EventHandler<LevelUpArgs> handler = LevelUp;
+
+        if(handler != null)
+        {
+            handler(this, e);
+        }
+    }
+    #endregion
+
     #region HealthChanged Event
     public event EventHandler HealthChanged;
 
@@ -295,4 +339,51 @@ public class Troop : MonoBehaviour {
         }
     }
     #endregion
+}
+
+[Serializable]
+public class LevellingBias
+{
+    [SerializeField] private int[] statWeights;
+    [SerializeField] private float[] incrementAmounts;
+    private float[] normalizedWeights;
+
+    public void InitializeWeights()
+    {
+        normalizedWeights = new float[statWeights.Length];
+
+        int total = 0;
+        for(int i = 0; i <= statWeights.Length; i++)
+        {
+            total += statWeights[i];
+        }
+
+        for(int i = 0; i <= statWeights.Length; i++)
+        {
+            normalizedWeights[i] = (float)statWeights[i] / (float)total + ((i > 0) ? normalizedWeights[i - 1] : 0);
+        }
+    }
+
+    public Biases GetBias(float f)
+    {
+        if(f > 1 || f < 0) { f = 1; }
+
+        for(int i = 0; i < normalizedWeights.Length; i++)
+        {
+            if(f <= normalizedWeights[i])
+            {
+                return (Biases)i;
+            }
+        }
+
+        return Biases.INVALID;
+    }
+
+    public enum Biases
+    {
+        INVALID = -1,
+        MAX_HEALTH,
+        ATTACK_DAMAGE,
+        ATTACK_SPEED
+    }
 }

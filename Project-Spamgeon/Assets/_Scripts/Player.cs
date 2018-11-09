@@ -278,7 +278,6 @@ public class Player : MonoBehaviour {
 
     private void OnNoMoreTroopsLeft(NoMoreTroopsLeftArgs args)
     {
-        Debug.Log(gameObject.name + " no more troops.");
         EventHandler<NoMoreTroopsLeftArgs> handler = NoMoreTroopsLeft;
 
         if(handler != null)
@@ -286,6 +285,7 @@ public class Player : MonoBehaviour {
             handler(this, args);
         }
     }
+
 }
 
 public enum Players
