@@ -351,15 +351,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level_: 1
   currentExp_: 0
-  levellingBias:
-    statWeights: 
-    incrementAmounts: []
-  maxHealth_: 10
+  stats:
+    stats_:
+    - statName_: 0
+      currentValue_: 10
+      levelingWeight_: 25
+      levelingAmount_: 1
+    - statName_: 1
+      currentValue_: 1
+      levelingWeight_: 25
+      levelingAmount_: 0.1
+    - statName_: 2
+      currentValue_: 1
+      levelingWeight_: 25
+      levelingAmount_: 0.1
   currentHealth_: 0
-  maxEnergy_: 10
   currentEnergy_: 0
-  attackDamage_: 1
-  attackSpeed_: 1
   isAlive: 1
   attackSound: {fileID: 8300000, guid: 04d58b4a7a6bf0c458a746e1ed94c540, type: 3}
   deathSound: {fileID: 8300000, guid: 6afaa53d41525924980cd993da2eab40, type: 3}

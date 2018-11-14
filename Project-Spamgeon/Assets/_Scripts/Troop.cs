@@ -13,20 +13,19 @@ public class Troop : MonoBehaviour {
     public float CurrentExp { get { return currentExp_; } }
     public float ExperienceThreshold { get { return EXP_REQUIRED_PER_LEVEL * level_; } }
 
-    [SerializeField] private LevellingBias levellingBias;
+    [SerializeField] private TroopStatsContainer stats;
 
-    [SerializeField] private float maxHealth_;
-    public float MaxHealth { get { return maxHealth_; } }
+    public float MaxHealth { get { return stats.GetStat(TroopStatNames.MAX_HEALTH).CurrentValue; } }
     [SerializeField] private float currentHealth_;
     public float CurrentHealth { get { return currentHealth_; } }
 
-    [SerializeField] private float maxEnergy_;
-    public float MaxEnergy { get { return maxEnergy_; } }
+    public float MaxEnergy { get { return 10.0f; } }
     [SerializeField] private float currentEnergy_;
     public float CurrentEnergy { get { return currentEnergy_; } }
 
-    [SerializeField] private float attackDamage_ = 1;
-    [SerializeField] private float attackSpeed_ = 0.1f;
+    public float AttackDamage { get { return stats.GetStat(TroopStatNames.ATTACK_DAMAGE).CurrentValue; } }
+
+    public float AttackSpeed { get { return stats.GetStat(TroopStatNames.ATTACK_SPEED).CurrentValue; } }
 
     [SerializeField] private bool isAlive = true;
 
@@ -63,11 +62,14 @@ public class Troop : MonoBehaviour {
         defaultSpriteLocation = graphic.transform.localPosition;
         ps = GetComponent<ParticleSystem>();
         ResetTroop();
+        stats.Initialize();
+        PushToLevel(20);
     }
 
     private void Start()
     {
         GameStateHandler.StateChanged += GameStateHandler_StateChanged;
+        
     }
 
 
@@ -137,43 +139,68 @@ public class Troop : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Add energy to the troop. Trigger attack and cycle back to zero if energy is greater than max energy.
+    /// </summary>
     public void AddEnergy()
     {
         if (!isAlive) { return; }
 
-        currentEnergy_ += attackSpeed_;
-        if(currentEnergy_ > maxEnergy_) {
+        currentEnergy_ += AttackSpeed;
+        if(currentEnergy_ > MaxEnergy) {
             if(target != null) {
                 if (Attack()) {
-                    currentEnergy_ = currentEnergy_ - maxEnergy_;
+                    currentEnergy_ = currentEnergy_ - MaxEnergy;
                 }  
             }
             else {
-                currentEnergy_ = maxEnergy_;
+                currentEnergy_ = MaxEnergy;
             }
         }
         OnEnergyChanged();
     }
 
+    /// <summary>
+    /// Adds experience to the troop. Increments level if the exp threshold is passed, then resets the currenExp with the remainder added.
+    /// </summary>
+    /// <param name="exp">The amount of exp to add.</param>
     public void AddExperience(int exp)
     {
         currentExp_ += exp;
-        if(currentExp_ >= ExperienceThreshold)
+        while(currentExp_ >= ExperienceThreshold)
         {
             currentExp_ -= ExperienceThreshold;
             IncrementLevel();
         }
-
-        Vector3 tempVec = transform.localScale;
-        tempVec.x *= -1;
-        transform.localScale = tempVec;
     }
 
+    /// <summary>
+    /// Increments the troops level, increases a random weighted stat and dispatches the LevelUp event.
+    /// </summary>
     public void IncrementLevel()
     {
         level_++;
-        LevelUpArgs args = new LevelUpArgs(this, Level);
+
+        float levelStatAtNormalWeight = UnityEngine.Random.value;
+
+        TroopStat leveledStat = stats.GetStatFromNoramlized(levelStatAtNormalWeight);
+
+        leveledStat.LevelUp();
+
+        LevelUpArgs args = new LevelUpArgs(this, Level, leveledStat);
         OnLevelUp(args);
+    }
+
+    /// <summary>
+    /// Levels up the troop to the target level.
+    /// </summary>
+    /// <param name="targetLevel">The level to push the troop to.</param>
+    public void PushToLevel(int targetLevel)
+    {
+        while(level_ < targetLevel)
+        {
+            IncrementLevel();
+        }
     }
 
     private bool Attack()
@@ -186,7 +213,7 @@ public class Troop : MonoBehaviour {
 
         audioSource.clip = attackSound;
         audioSource.Play();
-        target.Damage(attackDamage_);
+        target.Damage(AttackDamage);
         animator.SetTrigger("Attack");
 
         return true;
@@ -220,7 +247,7 @@ public class Troop : MonoBehaviour {
     public void ResetTroop()
     {
         isAlive = true;
-        currentHealth_ = maxHealth_;
+        currentHealth_ = MaxHealth;
         currentEnergy_ = 0.0f;
         OnHealthChanged();
         OnEnergyChanged();
@@ -268,11 +295,13 @@ public class Troop : MonoBehaviour {
     {
         public Troop troop;
         public int newLevel;
+        public TroopStat statThatWasLeveled;
 
-        public LevelUpArgs(Troop t, int newLevel_)
+        public LevelUpArgs(Troop t, int newLevel_, TroopStat statThatWasLeveled_)
         {
             troop = t;
             newLevel = newLevel_;
+            statThatWasLeveled = statThatWasLeveled_;
         }
     }
 
@@ -341,49 +370,3 @@ public class Troop : MonoBehaviour {
     #endregion
 }
 
-[Serializable]
-public class LevellingBias
-{
-    [SerializeField] private int[] statWeights;
-    [SerializeField] private float[] incrementAmounts;
-    private float[] normalizedWeights;
-
-    public void InitializeWeights()
-    {
-        normalizedWeights = new float[statWeights.Length];
-
-        int total = 0;
-        for(int i = 0; i <= statWeights.Length; i++)
-        {
-            total += statWeights[i];
-        }
-
-        for(int i = 0; i <= statWeights.Length; i++)
-        {
-            normalizedWeights[i] = (float)statWeights[i] / (float)total + ((i > 0) ? normalizedWeights[i - 1] : 0);
-        }
-    }
-
-    public Biases GetBias(float f)
-    {
-        if(f > 1 || f < 0) { f = 1; }
-
-        for(int i = 0; i < normalizedWeights.Length; i++)
-        {
-            if(f <= normalizedWeights[i])
-            {
-                return (Biases)i;
-            }
-        }
-
-        return Biases.INVALID;
-    }
-
-    public enum Biases
-    {
-        INVALID = -1,
-        MAX_HEALTH,
-        ATTACK_DAMAGE,
-        ATTACK_SPEED
-    }
-}
