@@ -17,4 +17,6 @@ public class SelectionMeter : MonoBehaviour {
         slider = GetComponent<Slider>();
         cg = GetComponent<CanvasGroup>();
     }
+
+    
 }

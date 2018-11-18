@@ -6,10 +6,18 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 
-public class Selectable : MonoBehaviour {
+public class SingleButtonSelectable : MonoBehaviour {
 
     [SerializeField] private Behaviour[] focusBehaviours;
     [SerializeField] private Behaviour[] selectedBehaviours;
+    [SerializeField] private AudioClip focusAudio;
+    [SerializeField] private AudioClip selectedAudio;
+    [SerializeField] private int group_ = 0;
+    public int Group { get { return group_; } }
+    [SerializeField] private int tabIndex_ = 0;
+    public int TabIndex { get { return tabIndex_; } }
+    private AudioSource audioSource;
+
     private bool hasFocus_ = false;
     public bool HasFocus { get { return hasFocus_; } }
 
@@ -18,11 +26,17 @@ public class Selectable : MonoBehaviour {
 	private void Awake () {
         SetSelectedBehaviourEnabled(false);
         SetFocusBehaviourEnabled(false);
+        audioSource = GetComponent<AudioSource>();
 	}
 
-    public void Focus()
+    public void Focus(bool playNoise = true)
     {
         SetFocusBehaviourEnabled(true);
+        if (playNoise)
+        {
+            audioSource.clip = focusAudio;
+            audioSource.Play();
+        }
         OnFocusReceived();
     }
 
@@ -32,9 +46,14 @@ public class Selectable : MonoBehaviour {
         OnFocusLost();
     }
 
-    public void Select()
+    public void Select(bool playNoise = true)
     {
         SetSelectedBehaviourEnabled(true);
+        if (playNoise)
+        {
+            audioSource.clip = selectedAudio;
+            audioSource.Play();
+        }
         OnSelect.Invoke();
     }
 

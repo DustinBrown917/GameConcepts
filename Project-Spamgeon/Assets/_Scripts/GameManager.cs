@@ -16,7 +16,9 @@ public class GameManager : MonoBehaviour {
 
     [SerializeField] private Player leftPlayer;
     [SerializeField] private Player rightPlayer;
-    [SerializeField] private TroopPool[] troopPools = new TroopPool[4];
+    [SerializeField] private TroopPool[] playerTroopPools;
+    [SerializeField] private TroopPool computerTroopPool;
+
 
     /************************************************************************************/
     /********************************* UNITY BEHAVIOURS *********************************/
@@ -50,26 +52,37 @@ public class GameManager : MonoBehaviour {
 
     public static void SetNumOfPlayers(byte num)
     {
-        
         if(numOfPlayers_ == num || num == 0) { return; }
 
         numOfPlayers_ = num;
 
         if(num == 1)
         {
-            Instance.leftPlayer.ChangePlayerType(Players.SINGLE);
-            Instance.rightPlayer.ChangePlayerType(Players.COMPUTER);
+            Instance.leftPlayer.ChangePlayerType(0);
+            Instance.rightPlayer.ChangePlayerType(-1);
         } else
         {
-            Instance.leftPlayer.ChangePlayerType(Players.FIRST);
-            Instance.rightPlayer.ChangePlayerType(Players.SECOND);
+            Instance.leftPlayer.ChangePlayerType(1);
+            Instance.rightPlayer.ChangePlayerType(2);
         }
     }
 
-    public static TroopPool GetPlayerTroopPool(Players playerType)
+    /// <summary>
+    /// Returns a troop pool associated with a given player.
+    /// </summary>
+    /// <param name="playerIndex">The index of the player whose troop pool you wish to get. (-1 for computer)</param>
+    /// <returns>The troop pool of the specified player.</returns>
+    public static TroopPool GetPlayerTroopPool(int playerIndex)
     {
         if (!IsInitialized()) { return null; }
-        return Instance.troopPools[(int)playerType];
+
+        if (playerIndex == -1) {
+            return Instance.computerTroopPool;
+        } else if (playerIndex >= 0 && playerIndex < Instance.playerTroopPools.Length) {
+            return Instance.playerTroopPools[playerIndex];
+        }
+
+        return null;
     }
 
     public static void ResetDungeonDepth()

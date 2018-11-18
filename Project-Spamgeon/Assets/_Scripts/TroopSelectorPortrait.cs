@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TroopSelectorPortrait : Selectable {
+public class TroopSelectorPortrait : SingleButtonSelectable {
 
     private Troop troop_;
     public Troop Troop { get { return troop_; } }

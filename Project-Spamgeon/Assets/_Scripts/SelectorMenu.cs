@@ -5,11 +5,11 @@ using UnityEngine.UI;
 
 public class SelectorMenu : MonoBehaviour {
 
-    [SerializeField] protected List<Selectable> selectables;
+    [SerializeField] protected List<SingleButtonSelectable> selectables;
     [SerializeField] private SelectionMeter selectionMeter;
     [SerializeField] private AudioClip focusNoise;
     [SerializeField] private AudioClip selectNoise;
-    [SerializeField] protected Players playerToListenTo;
+    [SerializeField] protected int playerIndexToListenTo;
     private AudioSource audioSource;
     protected int currentlySelectedIndex_ = 0;
     private Coroutine cr_MeterFill;
@@ -52,7 +52,7 @@ public class SelectorMenu : MonoBehaviour {
 
     protected virtual void InputGrabber_SelectEvent(object sender, InputGrabber.SelectEventArgs e)
     {
-        if(e.player != playerToListenTo) { return; }
+        if(e.playerIndex != playerIndexToListenTo) { return; }
         selectables[currentlySelectedIndex_].Select();
         audioSource.clip = selectNoise;
         audioSource.Play();
@@ -60,7 +60,7 @@ public class SelectorMenu : MonoBehaviour {
 
     protected void InputGrabber_TabEvent(object sender, InputGrabber.TabEventArgs e)
     {
-        if(e.player == playerToListenTo)
+        if(e.playerIndex == playerIndexToListenTo)
         {
             FocusNext();
         }
@@ -68,7 +68,7 @@ public class SelectorMenu : MonoBehaviour {
 
     protected void InputGrabber_InputEventStart(object sender, InputGrabber.InputEventStartArgs e)
     {
-        if (e.player == playerToListenTo)
+        if (e.playerIndex == playerIndexToListenTo)
         {
             CoroutineManager.BeginCoroutine(FillInputMeter(), ref cr_MeterFill, this);
         }
@@ -78,7 +78,7 @@ public class SelectorMenu : MonoBehaviour {
     {
         while(selectionMeter.Value < 1)
         {
-            selectionMeter.Value = InputGrabber.Instance.GetSelectionTime(playerToListenTo) / InputGrabber.Instance.TimeToSelect;
+            selectionMeter.Value = InputGrabber.Instance.GetSelectionTime(playerIndexToListenTo) / InputGrabber.Instance.TimeToSelect;
             selectionMeter.Alpha = selectionMeter.Value;
             yield return null;
         }
@@ -141,13 +141,13 @@ public class SelectorMenu : MonoBehaviour {
         hookedToInput = false;
     }
 
-    public void AddSelectable(Selectable s)
+    public void AddSelectable(SingleButtonSelectable s)
     {
         selectables.Add(s);
         FocusOn(currentlySelectedIndex_);
     }
 
-    public void RemoveSelectable(Selectable s)
+    public void RemoveSelectable(SingleButtonSelectable s)
     {
         selectables.Remove(s);
         FocusOn(currentlySelectedIndex_);

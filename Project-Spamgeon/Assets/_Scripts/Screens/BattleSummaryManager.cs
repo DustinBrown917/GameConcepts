@@ -14,7 +14,7 @@ public class BattleSummaryManager : MonoBehaviour {
     private void Awake()
     {
         selectorButtonText = selectorButton.GetComponentInChildren<Text>();
-        selectorButton.GetComponent<Selectable>().OnSelect.AddListener(HandleContinue);
+        selectorButton.GetComponent<SingleButtonSelectable>().OnSelect.AddListener(HandleContinue);
     }
 
     private void HandleContinue()

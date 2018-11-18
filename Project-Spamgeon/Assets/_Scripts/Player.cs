@@ -11,7 +11,7 @@ public class Player : MonoBehaviour {
     [SerializeField] private List<GameObject> spawnPoints;
     [SerializeField] private Player opponent;
 
-    [SerializeField] private Players playerType;
+    [SerializeField] private int playerToListenTo = -1;
 
     [SerializeField] private PortraitHolder portraitHolder;
 
@@ -33,7 +33,7 @@ public class Player : MonoBehaviour {
         switch (e.Current)
         {
             case GameStateHandler.States.PRE_BATTLE:
-                if (playerType == Players.COMPUTER)
+                if (playerToListenTo == -1)
                 {
                     GenerateActiveTroops(UnityEngine.Random.Range(1, Mathf.Clamp(GameManager.CurrentDungeonDepth / 2, 1, 5)));
                 }
@@ -44,7 +44,7 @@ public class Player : MonoBehaviour {
                 AssignTargetsToAll();
                 HookUpInputGrabber();
 
-                if (playerType == Players.COMPUTER)
+                if (playerToListenTo == -1)
                 {
                     CoroutineManager.BeginCoroutine(ComputerEnergyDistribution(), ref cr_ComputerEnergyDistrubution, this);
                 }
@@ -52,7 +52,7 @@ public class Player : MonoBehaviour {
 
             case GameStateHandler.States.POST_BATTLE:
                 UnhookInputGrabber();
-                if (playerType == Players.COMPUTER)
+                if (playerToListenTo == -1)
                 {
                     CoroutineManager.HaltCoroutine(ref cr_ComputerEnergyDistrubution, this);
                 }
@@ -85,18 +85,18 @@ public class Player : MonoBehaviour {
 
     private void InputGrabber_TabEvent(object sender, InputGrabber.TabEventArgs e)
     {
-        if(e.player == playerType)
+        if(e.playerIndex == playerToListenTo)
         {
             AddEnergyToActiveTroops();
         }
     }
 
-    public void ChangePlayerType(Players type)
+    public void ChangePlayerType(int playerIndex)
     {
-        if(type == playerType) { return; }
+        if(playerIndex == playerToListenTo) { return; }
 
-        playerType = type;
-        troopPool = GameManager.GetPlayerTroopPool(type);
+        playerToListenTo = playerIndex;
+        troopPool = GameManager.GetPlayerTroopPool(playerIndex);
     }
 
     public Troop GetRandomTroopFromPool()
@@ -187,7 +187,7 @@ public class Player : MonoBehaviour {
 
     private void HookUpInputGrabber()
     {
-        if(playerType != Players.COMPUTER)
+        if(playerToListenTo != -1)
         {
             InputGrabber.Instance.TabEvent += InputGrabber_TabEvent;
         }
@@ -195,7 +195,7 @@ public class Player : MonoBehaviour {
 
     private void UnhookInputGrabber()
     {
-        if (playerType != Players.COMPUTER)
+        if (playerToListenTo != -1)
         {
             InputGrabber.Instance.TabEvent -= InputGrabber_TabEvent;
         }
@@ -210,7 +210,9 @@ public class Player : MonoBehaviour {
     }
 
 
-
+    /************************************************************************************/
+    /************************************** EVENTS **************************************/
+    /************************************************************************************/
 
     public event EventHandler<TroopRemovedArgs> TroopRemoved;
 
@@ -288,11 +290,11 @@ public class Player : MonoBehaviour {
 
 }
 
-public enum Players
-{
-    INVALID = -1,
-    SINGLE,
-    FIRST,
-    SECOND,
-    COMPUTER
-}
+//public enum Players
+//{
+//    INVALID = -1,
+//    SINGLE,
+//    FIRST,
+//    SECOND,
+//    COMPUTER
+//}

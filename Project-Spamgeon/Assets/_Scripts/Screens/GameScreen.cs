@@ -25,6 +25,11 @@ public class GameScreen : MonoBehaviour {
         }
     }
 
+    private void Start()
+    {
+        Debug.Log(GetComponentsInChildren<SingleButtonSelectable>().Length);
+    }
+
     private void HookUpSelectorMenus()
     {
         if(selectorMenus.Length == 0) { return; }

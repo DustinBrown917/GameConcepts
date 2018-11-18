@@ -8,7 +8,7 @@ public class InputGrabber : MonoBehaviour {
     private static InputGrabber instance_;
     public static InputGrabber Instance { get { return instance_; } }
 
-    [SerializeField] private float[] playerTimers;
+    private float[] playerTimers;
     [SerializeField] private KeyCode[] playerKeys;
     private Coroutine[] timerCoroutines;
     [SerializeField] private float timeToSelect = 1.0f;
@@ -19,6 +19,10 @@ public class InputGrabber : MonoBehaviour {
      * Need to set up an array that will store which players' input is blocked. 
      */
 
+    /************************************************************************************/
+    /********************************* UNITY BEHAVIOURS *********************************/
+    /************************************************************************************/
+
     private void Awake()
     {
         if(instance_ != null)
@@ -28,72 +32,83 @@ public class InputGrabber : MonoBehaviour {
         }
         instance_ = this;
 
-        playerTimers = new float[3];
-        timerCoroutines = new Coroutine[3];
+        playerTimers = new float[playerKeys.Length];
+        timerCoroutines = new Coroutine[playerKeys.Length];
     }
 
     private void Update()
     {
         if (inputBlocked_) { return; }
 
-        if (Input.GetKeyDown(playerKeys[0]))
+        for(int i = 0; i < playerKeys.Length; i++)
         {
-            StartSelectionTimer(Players.SINGLE);
-            OnInputEventStart(new InputEventStartArgs(Players.SINGLE));
-        }
-        if (Input.GetKeyDown(playerKeys[1]))
-        {
-            StartSelectionTimer(Players.FIRST);
-            OnInputEventStart(new InputEventStartArgs(Players.FIRST));
-        }
-        if (Input.GetKeyDown(playerKeys[2]))
-        {
-            StartSelectionTimer(Players.SECOND);
-            OnInputEventStart(new InputEventStartArgs(Players.SECOND));
+            if (Input.GetKeyDown(playerKeys[i]))
+            {
+                StartSelectionTimer(i);
+            }
         }
     }
 
-    public float GetSelectionTime(Players timer)
+    /************************************************************************************/
+    /************************************ BEHAVIOURS ************************************/
+    /************************************************************************************/
+
+    /// <summary>
+    /// Returns the time accumulated in a specific timer.
+    /// </summary>
+    /// <param name="index">The index of the timer to get.</param>
+    /// <returns>The time accumulated in the timer.</returns>
+    public float GetSelectionTime(int index)
     {
-        return playerTimers[(int)timer];
+        if(index < 0 || index >= playerTimers.Length) { return -1; }
+        return playerTimers[index];
     }
 
-    private void StartSelectionTimer(Players player)
+    /// <summary>
+    /// Begins running a selection timer.
+    /// </summary>
+    /// <param name="index">The timer to run.</param>
+    private void StartSelectionTimer(int index)
     {
-        int playerIndex = (int)player;
-        if(timerCoroutines[playerIndex] != null)
-        {
-            StopCoroutine(timerCoroutines[playerIndex]);
-            timerCoroutines[playerIndex] = null;
-        }
-        timerCoroutines[playerIndex] = StartCoroutine(SelectionTimer(player, timerCoroutines[playerIndex]));
+        CoroutineManager.HaltCoroutine(ref timerCoroutines[index], this);
+        CoroutineManager.BeginCoroutine(SelectionTimer(index, timerCoroutines[index]), ref timerCoroutines[index], this);
     }
 
-    private IEnumerator SelectionTimer(Players player, Coroutine container)
+    /// <summary>
+    /// Runs a timer. If the threshold is met, a selection event is fired. If it is not, a tab event is fired.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="container"></param>
+    /// <returns></returns>
+    private IEnumerator SelectionTimer(int index, Coroutine container)
     {
-        int playerIndex = (int)player;
+        int playerIndex = index;
         while (Input.GetKey(playerKeys[playerIndex]) && playerTimers[playerIndex] < timeToSelect)
         {
             playerTimers[playerIndex] += Time.deltaTime;
             yield return null;
         }
 
-        if(playerTimers[playerIndex] >= timeToSelect)
+        if (playerTimers[playerIndex] >= timeToSelect)
         {
-            OnSelectEvent(new SelectEventArgs(player));
-        } else
+            OnSelectEvent(new SelectEventArgs(index));
+        }
+        else
         {
-            OnTabEvent(new TabEventArgs(player));
+            OnTabEvent(new TabEventArgs(index));
         }
         playerTimers[playerIndex] = 0;
         container = null;
     }
 
-    private void CancelInput(Players player)
+    /// <summary>
+    /// Halts and resets the input timer at the given index.
+    /// </summary>
+    /// <param name="index">The player index to stop.</param>
+    private void CancelInput(int index)
     {
-        StopCoroutine(timerCoroutines[(int)player]);
-        timerCoroutines[(int)player] = null;
-        playerTimers[(int)player] = 0;
+        CoroutineManager.HaltCoroutine(ref timerCoroutines[index], this);
+        playerTimers[index] = 0;
     }
 
 
@@ -107,11 +122,11 @@ public class InputGrabber : MonoBehaviour {
 
     public class TabEventArgs : EventArgs
     {
-        public Players player;
+        public int playerIndex;
 
-        public TabEventArgs(Players p)
+        public TabEventArgs(int p)
         {
-            player = p;
+            playerIndex = p;
         }      
     }
 
@@ -133,11 +148,11 @@ public class InputGrabber : MonoBehaviour {
 
     public class SelectEventArgs : EventArgs
     {
-        public Players player;
+        public int playerIndex;
 
-        public SelectEventArgs(Players p)
+        public SelectEventArgs(int p)
         {
-            player = p;
+            playerIndex = p;
         }
     }
 
@@ -159,11 +174,11 @@ public class InputGrabber : MonoBehaviour {
 
     public class InputEventStartArgs : EventArgs
     {
-        public Players player;
+        public int playerIndex;
 
-        public InputEventStartArgs(Players p)
+        public InputEventStartArgs(int p)
         {
-            player = p;
+            playerIndex = p;
         }
     }
 
