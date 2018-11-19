@@ -7,7 +7,7 @@ public class SBSManager : MonoBehaviour {
     private Dictionary<int, SBSGroup> sbsGroups;
 
     [SerializeField] private bool hookUpOnEnable = true;
-    private bool hookedToInput;
+    [SerializeField] private bool hookedToInput;
 
 
     /************************************************************************************/
@@ -28,6 +28,11 @@ public class SBSManager : MonoBehaviour {
     private void OnEnable()
     {
         if (hookUpOnEnable) { HookToInput(); }
+    }
+
+    private void Start()
+    {
+        FocusAllCurrents();
     }
 
     private void OnDisable()
@@ -162,6 +167,8 @@ public class SBSManager : MonoBehaviour {
         if (!sbsGroups.ContainsKey(group)) { return; }
         if (sbsGroups[group].Selectables.Count == 0) { return; }
 
+        sbsGroups[group].Selectables[sbsGroups[group].CurrentlySelectedIndex].Defocus();
+
         int safetyBreak = 0;
 
         do //loop while the CurrentlySelectedIndex is pointing to an inactive selectable.
@@ -183,6 +190,23 @@ public class SBSManager : MonoBehaviour {
 
 
         sbsGroups[group].Selectables[sbsGroups[group].CurrentlySelectedIndex].Focus();
+    }
+
+    /// <summary>
+    /// Focuses the currentIndex of all groups with no noise.
+    /// </summary>
+    public void FocusAllCurrents()
+    {
+        foreach(int g in sbsGroups.Keys)
+        {
+            if(sbsGroups[g].CurrentlySelectedIndex >= 0 && sbsGroups[g].CurrentlySelectedIndex < sbsGroups[g].Selectables.Count)
+            {
+                if (sbsGroups[g].Selectables[sbsGroups[g].CurrentlySelectedIndex].gameObject.activeSelf)
+                {
+                    sbsGroups[g].Selectables[sbsGroups[g].CurrentlySelectedIndex].Focus(false);
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -213,6 +237,15 @@ public class SBSManager : MonoBehaviour {
         }
 
         sbsGroups[group].SelectionMeter = selectionMeter;
+    }
+
+    /// <summary>
+    /// Sets the value of hookUpOnEnable.
+    /// </summary>
+    /// <param name="b"></param>
+    public void SetHookUpOnEnable(bool b)
+    {
+        hookUpOnEnable = b;
     }
 
     /************************************************************************************/

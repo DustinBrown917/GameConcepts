@@ -34,7 +34,7 @@ public class TroopSelectorMenu : SelectorMenu {
     protected override void InputGrabber_SelectEvent(object sender, InputGrabber.SelectEventArgs e)
     {
         base.InputGrabber_SelectEvent(sender, e);
-        if(e.player != playerToListenTo) { return; }
+        if(e.playerIndex != playerIndexToListenTo) { return; }
         TroopSelectorPortrait troopSelectorPortrait = selectables[currentlySelectedIndex_].GetComponent<TroopSelectorPortrait>();
 
         if(troopSelectorPortrait != null)

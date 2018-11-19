@@ -4,66 +4,82 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //Remove in favour of GameScreen
-[RequireComponent(typeof(CanvasGroup))]
+[RequireComponent(typeof(CanvasGroup), typeof(SBSManager))]
 public class GameScreen : MonoBehaviour {
 
     private const float STANDARD_FADE_TIME = 0.5f;
 
-    [SerializeField] private SelectorMenu[] selectorMenus;
-
     public string Name { get { return gameObject.name; } }
 
+    private SBSManager sbsManager;
     private CanvasGroup canvasGroup;
-
     private Coroutine cr_Fading = null;
 
-    private void Awake()
+    /************************************************************************************/
+    /********************************* UNITY BEHAVIOURS *********************************/
+    /************************************************************************************/
+
+    protected void Awake()
     {
         if(canvasGroup == null)
         {
             canvasGroup = GetComponent<CanvasGroup>();
         }
+
+        sbsManager = GetComponent<SBSManager>();
+        sbsManager.SetHookUpOnEnable(false);
     }
 
     private void Start()
     {
-        Debug.Log(GetComponentsInChildren<SingleButtonSelectable>().Length);
+        sbsManager.HookToInput();
+        sbsManager.enabled = true;
     }
 
-    private void HookUpSelectorMenus()
-    {
-        if(selectorMenus.Length == 0) { return; }
-        for(int i = 0; i < selectorMenus.Length; i++)
-        {
-            selectorMenus[i].HookToInput();
-        }
-    }
+    /************************************************************************************/
+    /************************************ BEHAVIOURS ************************************/
+    /************************************************************************************/
 
-    private void UnhookSelectorMenus()
-    {
-        if (selectorMenus.Length == 0) { return; }
-        for (int i = 0; i < selectorMenus.Length; i++)
-        {
-            selectorMenus[i].UnHookFromInput();
-        }
-    }
+    /// <summary>
+    /// Hooks the SBSManager to input.
+    /// </summary>
+    public void HookUpSBSManager() { sbsManager.HookToInput(); }
 
-    public void FadeIn()
-    {
+    /// <summary>
+    /// Unhooks the SBSManager from input.
+    /// </summary>
+    private void UnhookSBSManager() { sbsManager.UnHookFromInput(); }
+
+    /// <summary>
+    /// Fades the canvas group alpha to 1.0 over the STANDARD_FADE_TIME seconds.
+    /// </summary>
+    public void FadeIn() {
+        TransitionComplete += HookSBSManagerByEvent;
         CoroutineManager.BeginCoroutine(FadeTo(1.0f, STANDARD_FADE_TIME), ref cr_Fading, this);
     }
 
-    public void FadeOut()
-    {
+    /// <summary>
+    /// Fades the canvas group alpha to 0 over the STANDARD_FADE_TIME seconds.
+    /// </summary>
+    public void FadeOut() {
         CoroutineManager.BeginCoroutine(FadeTo(0.0f, STANDARD_FADE_TIME), ref cr_Fading, this);
+        UnhookSBSManager();
     }
 
+    /************************************************************************************/
+    /************************************ COROUTINES ************************************/
+    /************************************************************************************/
+
+    /// <summary>
+    /// Fades the canvas group to a specified alpha over a specified number of seconds.
+    /// </summary>
+    /// <param name="alphaTarget">The target alpha to fade to.</param>
+    /// <param name="fadeTime">The time the fade should take.</param>
+    /// <returns></returns>
     private IEnumerator FadeTo(float alphaTarget, float fadeTime)
     {
         float initialAlpha = canvasGroup.alpha;
         float elapsedTime = 0;
-
-        if(alphaTarget == 0) { UnhookSelectorMenus(); }
 
         while (elapsedTime <= fadeTime)
         {
@@ -72,14 +88,32 @@ public class GameScreen : MonoBehaviour {
             yield return null;
         }
 
-        if(alphaTarget == 1.0f) { HookUpSelectorMenus(); }
-
         OnTransitionComplete(new TransitionCompleteArgs(this));
 
         cr_Fading = null;
     }
 
+    /************************************************************************************/
+    /********************************* EVENT LISTENERS **********************************/
+    /************************************************************************************/
 
+    /// <summary>
+    /// Hooks up input after a transition has completed.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void HookSBSManagerByEvent(object sender, TransitionCompleteArgs e)
+    {
+        TransitionComplete -= HookSBSManagerByEvent;
+        HookUpSBSManager();
+    }
+
+    /************************************************************************************/
+    /************************************** EVENTS **************************************/
+    /************************************************************************************/
+
+
+    #region TransitionComplete Event
     public event EventHandler<TransitionCompleteArgs> TransitionComplete;
 
     public class TransitionCompleteArgs : EventArgs
@@ -101,4 +135,5 @@ public class GameScreen : MonoBehaviour {
             handler(this, e);
         }
     }
+    #endregion
 }
