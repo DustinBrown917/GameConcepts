@@ -21,14 +21,14 @@ public class TroopSelectorMenu : SelectorMenu {
 
     private void SpawnTroopPortraits()
     {
-        for(int i = 0; i < troopPool.troops.Count; i++)
-        {
-            GameObject go = Instantiate(troopSelectionPortrait, troopPortraitContainer);
-            TroopSelectorPortrait t = go.GetComponent<TroopSelectorPortrait>();
-            AddSelectable(t);
+        //for(int i = 0; i < troopPool.troops.Count; i++)
+        //{
+        //    GameObject go = Instantiate(troopSelectionPortrait, troopPortraitContainer);
+        //    TroopSelectorPortrait t = go.GetComponent<TroopSelectorPortrait>();
+        //    AddSelectable(t);
 
-            t.SetTroop(troopPool.troops[i].GetComponent<Troop>());
-        }
+        //    t.SetTroop(troopPool.troops[i].GetComponent<Troop>());
+        //}
     }
 
     protected override void InputGrabber_SelectEvent(object sender, InputGrabber.SelectEventArgs e)

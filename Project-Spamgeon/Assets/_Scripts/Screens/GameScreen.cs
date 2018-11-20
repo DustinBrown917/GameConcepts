@@ -11,7 +11,7 @@ public class GameScreen : MonoBehaviour {
 
     public string Name { get { return gameObject.name; } }
 
-    private SBSManager sbsManager;
+    protected SBSManager sbsManager;
     private CanvasGroup canvasGroup;
     private Coroutine cr_Fading = null;
 
@@ -30,7 +30,12 @@ public class GameScreen : MonoBehaviour {
         sbsManager.SetHookUpOnEnable(false);
     }
 
-    private void Start()
+    protected virtual void OnEnable()
+    {
+
+    }
+
+    protected virtual void Start()
     {
         sbsManager.HookToInput();
         sbsManager.enabled = true;

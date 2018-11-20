@@ -277,11 +277,13 @@ public class SBSManager : MonoBehaviour {
 
     protected virtual void InputGrabber_SelectEvent(object sender, InputGrabber.SelectEventArgs e)
     {
+        sbsGroups[e.playerIndex].SelectionMeter.Value = 0;
         SelectActiveIndex(e.playerIndex);
     }
 
     protected void InputGrabber_TabEvent(object sender, InputGrabber.TabEventArgs e)
     {
+        sbsGroups[e.playerIndex].SelectionMeter.Value = 0;
         FocusNext(e.playerIndex);
         CoroutineManager.HaltCoroutine(ref sbsGroups[e.playerIndex].CR_MeterFill, this);
     }

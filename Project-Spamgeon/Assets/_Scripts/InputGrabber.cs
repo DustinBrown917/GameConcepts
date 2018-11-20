@@ -8,7 +8,7 @@ public class InputGrabber : MonoBehaviour {
     private static InputGrabber instance_;
     public static InputGrabber Instance { get { return instance_; } }
 
-    private float[] playerTimers;
+    [SerializeField] private float[] playerTimers;
     [SerializeField] private KeyCode[] playerKeys;
     private Coroutine[] timerCoroutines;
     [SerializeField] private float timeToSelect = 1.0f;
@@ -72,6 +72,7 @@ public class InputGrabber : MonoBehaviour {
     {
         CoroutineManager.HaltCoroutine(ref timerCoroutines[index], this);
         CoroutineManager.BeginCoroutine(SelectionTimer(index, timerCoroutines[index]), ref timerCoroutines[index], this);
+        OnInputEventStart(new InputEventStartArgs(index));
     }
 
     /// <summary>
@@ -83,18 +84,15 @@ public class InputGrabber : MonoBehaviour {
     private IEnumerator SelectionTimer(int index, Coroutine container)
     {
         int playerIndex = index;
-        while (Input.GetKey(playerKeys[playerIndex]) && playerTimers[playerIndex] < timeToSelect)
-        {
+        while (Input.GetKey(playerKeys[playerIndex]) && playerTimers[playerIndex] < timeToSelect) {
             playerTimers[playerIndex] += Time.deltaTime;
             yield return null;
         }
 
-        if (playerTimers[playerIndex] >= timeToSelect)
-        {
+        if (playerTimers[playerIndex] >= timeToSelect)  {
             OnSelectEvent(new SelectEventArgs(index));
         }
-        else
-        {
+        else {
             OnTabEvent(new TabEventArgs(index));
         }
         playerTimers[playerIndex] = 0;

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4942d2be00bc2d74284f934c383ae9dc, type: 3}
+  m_Name: Explorers
+  m_EditorClassIdentifier: 
+  troops:
+  - {fileID: 1232595440874696, guid: 04ce0c19203538545a7914f962e58767, type: 2}
+  - {fileID: 1555150025610138, guid: e1778fa0f72c1814983b5ada7ddf7e8d, type: 2}
+  - {fileID: 1232595440874696, guid: ef382120bfe2528489b2bdecd4f25a70, type: 2}
+  - {fileID: 1232595440874696, guid: a564f73c6463911469b75fdd13bd3980, type: 2}
+  - {fileID: 1232595440874696, guid: 2b5b3f199e7d58240bf6b1e9f0345ca9, type: 2}
