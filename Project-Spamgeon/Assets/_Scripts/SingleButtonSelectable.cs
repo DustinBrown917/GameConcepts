@@ -22,12 +22,18 @@ public class SingleButtonSelectable : MonoBehaviour {
     public bool HasFocus { get { return hasFocus_; } }
 
     public UnityEvent OnSelect;
+    public UnityEvent OnFocus;
 
 	private void Awake () {
         SetSelectedBehaviourEnabled(false);
         SetFocusBehaviourEnabled(false);
         audioSource = GetComponent<AudioSource>();
 	}
+
+    public void SetTabIndex(int index)
+    {
+        tabIndex_ = index;
+    }
 
     public void Focus(bool playNoise = true)
     {
@@ -37,7 +43,8 @@ public class SingleButtonSelectable : MonoBehaviour {
             audioSource.clip = focusAudio;
             audioSource.Play();
         }
-        OnFocusReceived();
+        OnFocus.Invoke();
+        //OnFocusReceived();
     }
 
     public void Defocus()
@@ -79,17 +86,17 @@ public class SingleButtonSelectable : MonoBehaviour {
     /************************************** EVENTS **************************************/
     /************************************************************************************/
 
-    public event EventHandler FocusReceived;
+    //public event EventHandler FocusReceived;
 
-    private void OnFocusReceived()
-    {
-        EventHandler handler = FocusReceived;
+    //private void OnFocusReceived()
+    //{
+    //    EventHandler handler = FocusReceived;
 
-        if (handler != null)
-        {
-            handler(this, EventArgs.Empty);
-        }
-    }
+    //    if (handler != null)
+    //    {
+    //        handler(this, EventArgs.Empty);
+    //    }
+    //}
 
     public event EventHandler FocusLost;
 

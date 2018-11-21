@@ -4,14 +4,16 @@ using UnityEngine;
 
 public class TroopPoolManager : MonoBehaviour {
 
-    [SerializeField] private TroopPool[] pools;
+    private static TroopPool[] pools;
 
-    private void Start()
+    [SerializeField] private TroopPool[] localPools;
+
+    private void Awake()
     {
-        Debug.Log(pools[0].name);
+        pools = localPools;
     }
 
-    public TroopPool GetPool(string poolName)
+    public static TroopPool GetPool(string poolName)
     {
         for(int i = 0; i < pools.Length; i++) {
             if(pools[i].name == poolName) {

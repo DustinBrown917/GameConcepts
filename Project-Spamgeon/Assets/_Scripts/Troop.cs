@@ -7,6 +7,8 @@ public class Troop : MonoBehaviour {
 
     public const float EXP_REQUIRED_PER_LEVEL = 60.0f;
 
+    [SerializeField] private string name_;
+    public string Name { get { return name_; } }
     [SerializeField] private int level_ = 1;
     public int Level { get { return level_; } }
     [SerializeField] private float currentExp_;

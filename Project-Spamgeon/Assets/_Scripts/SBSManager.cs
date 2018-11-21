@@ -16,13 +16,7 @@ public class SBSManager : MonoBehaviour {
 
     private void Awake()
     {
-        sbsGroups = new Dictionary<int, SBSGroup>();
-
-        SingleButtonSelectable[] unsortedSelectables = GetComponentsInChildren<SingleButtonSelectable>();
-        SortIntoGroups(unsortedSelectables);
-        foreach(int group in sbsGroups.Keys) {
-            SortGroupByTabIndex(group);
-        }
+        RefreshSelectables();
     }
 
     private void OnEnable()
@@ -43,6 +37,18 @@ public class SBSManager : MonoBehaviour {
     /************************************************************************************/
     /************************************ BEHAVIOURS ************************************/
     /************************************************************************************/
+
+    public void RefreshSelectables()
+    {
+        sbsGroups = new Dictionary<int, SBSGroup>();
+
+        SingleButtonSelectable[] unsortedSelectables = GetComponentsInChildren<SingleButtonSelectable>();
+        SortIntoGroups(unsortedSelectables);
+        foreach (int group in sbsGroups.Keys)
+        {
+            SortGroupByTabIndex(group);
+        }
+    }
 
     /// <summary>
     /// Sorts an array of SingleButtonSelectables into the selectables dictionary based on their group.
@@ -260,6 +266,7 @@ public class SBSManager : MonoBehaviour {
     /// <returns></returns>
     protected IEnumerator FillInputMeter(int groupID, SelectionMeter selectionMeter)
     {
+        Debug.Log(selectionMeter);
         while (selectionMeter.Value < 1)
         {
             selectionMeter.Value = InputGrabber.Instance.GetSelectionTime(groupID) / InputGrabber.Instance.TimeToSelect;
