@@ -10,6 +10,7 @@ public class PartySelectSingleScreen : GameScreen {
     [SerializeField] private ImageSelectable troopSelectablePrefab;
     [SerializeField] private Text explorerNameText;
     [SerializeField] private string targetTroopPool;
+    [SerializeField] private TroopAddedScreen troopAddedScreen;
 
     private TroopPool troopPool;
 
@@ -40,6 +41,7 @@ public class PartySelectSingleScreen : GameScreen {
             imgSel.SetImageSprite(troopPool[i].portrait);
             imgSel.SetTabIndex(i);
             imgSel.OnFocus.AddListener(delegate { UpdateTroopDisplayedData(imgSel.TabIndex); });
+            imgSel.OnSelect.AddListener(delegate { ConfirmSelection(imgSel.TabIndex); });
         }
     }
 
@@ -52,6 +54,12 @@ public class PartySelectSingleScreen : GameScreen {
         {
             explorerNameText.text = "";
         }
+    }
+
+    public void ConfirmSelection(int index)
+    {
+        troopAddedScreen.PointToPooledTroop(index, targetTroopPool);
+        ScreenManager.Instance.TransitionToScreen(troopAddedScreen.gameObject.name);
     }
 
 }

@@ -20,4 +20,18 @@ public static class CoroutineManager {
             container = null;
         }
     }
+
+    public static IEnumerator EnableAfterDelay(GameObject obj, float delay, Coroutine container)
+    {
+        yield return new WaitForSeconds(delay);
+        obj.SetActive(true);
+        container = null;
+    }
+
+    public static IEnumerator EnableAfterDelay(MonoBehaviour behaviour, float delay, Coroutine container)
+    {
+        yield return new WaitForSeconds(delay);
+        behaviour.enabled = true;
+        container = null;
+    }
 }

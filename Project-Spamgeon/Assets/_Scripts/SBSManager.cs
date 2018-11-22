@@ -7,7 +7,8 @@ public class SBSManager : MonoBehaviour {
     private Dictionary<int, SBSGroup> sbsGroups;
 
     [SerializeField] private bool hookUpOnEnable = true;
-    [SerializeField] private bool hookedToInput;
+    [SerializeField] private bool hookedToInput_;
+    public bool HookedToInput { get { return hookedToInput_; } }
 
 
     /************************************************************************************/
@@ -141,13 +142,13 @@ public class SBSManager : MonoBehaviour {
     /// </summary>
     public void HookToInput()
     {
-        if (hookedToInput) { return; }
+        if (hookedToInput_) { return; }
 
         InputGrabber.Instance.TabEvent += InputGrabber_TabEvent;
         InputGrabber.Instance.SelectEvent += InputGrabber_SelectEvent;
         InputGrabber.Instance.InputEventStart += InputGrabber_InputEventStart;
 
-        hookedToInput = true;
+        hookedToInput_ = true;
     }
 
     /// <summary>
@@ -155,13 +156,13 @@ public class SBSManager : MonoBehaviour {
     /// </summary>
     public void UnHookFromInput()
     {
-        if (!hookedToInput) { return; }
+        if (!hookedToInput_) { return; }
 
         InputGrabber.Instance.TabEvent -= InputGrabber_TabEvent;
         InputGrabber.Instance.SelectEvent -= InputGrabber_SelectEvent;
         InputGrabber.Instance.InputEventStart -= InputGrabber_InputEventStart;
 
-        hookedToInput = false;
+        hookedToInput_ = false;
     }
 
     /// <summary>
@@ -266,7 +267,6 @@ public class SBSManager : MonoBehaviour {
     /// <returns></returns>
     protected IEnumerator FillInputMeter(int groupID, SelectionMeter selectionMeter)
     {
-        Debug.Log(selectionMeter);
         while (selectionMeter.Value < 1)
         {
             selectionMeter.Value = InputGrabber.Instance.GetSelectionTime(groupID) / InputGrabber.Instance.TimeToSelect;

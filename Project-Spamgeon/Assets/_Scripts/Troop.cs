@@ -37,7 +37,8 @@ public class Troop : MonoBehaviour {
 
     private Animator animator;
 
-    [SerializeField] private SpriteRenderer graphic;
+    [SerializeField] private SpriteRenderer graphic_;
+    public SpriteRenderer Graphic { get { return graphic_; } }
     [SerializeField] private Color woundedColor;
     private Color defaultColor;
     private Vector3 defaultSpriteLocation;
@@ -60,8 +61,8 @@ public class Troop : MonoBehaviour {
     {
         audioSource = GetComponent<AudioSource>();
         animator = GetComponent<Animator>();
-        defaultColor = graphic.color;
-        defaultSpriteLocation = graphic.transform.localPosition;
+        defaultColor = graphic_.color;
+        defaultSpriteLocation = graphic_.transform.localPosition;
         ps = GetComponent<ParticleSystem>();
         ResetTroop();
         stats.Initialize();
@@ -263,25 +264,25 @@ public class Troop : MonoBehaviour {
 
     private IEnumerator DamageRumble()
     {
-        Transform graphicTransform = graphic.transform;
+        Transform graphicTransform = graphic_.transform;
         float rumbleTime = 0.15f;
         float t = 0f;
-        Vector3 rumblePosition = new Vector3(0, 0, graphic.transform.localPosition.z);
+        Vector3 rumblePosition = new Vector3(0, 0, graphic_.transform.localPosition.z);
 
         while (t < rumbleTime)
         {
             t += Time.deltaTime;
 
-            graphic.color = Color.Lerp(woundedColor, defaultColor, t / rumbleTime);
+            graphic_.color = Color.Lerp(woundedColor, defaultColor, t / rumbleTime);
             rumblePosition.x += UnityEngine.Random.Range(-0.1f, 0.1f);
 
-            graphic.transform.localPosition = defaultSpriteLocation + rumblePosition;
+            graphic_.transform.localPosition = defaultSpriteLocation + rumblePosition;
 
             yield return null;
         }
 
-        graphic.transform.localPosition = defaultSpriteLocation;
-        graphic.color = defaultColor;
+        graphic_.transform.localPosition = defaultSpriteLocation;
+        graphic_.color = defaultColor;
     }
 
 

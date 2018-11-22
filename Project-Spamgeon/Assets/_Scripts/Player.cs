@@ -7,7 +7,7 @@ public class Player : MonoBehaviour {
 
     [SerializeField] private List<Troop> activeTroops;
     public int ActiveTroopCount{ get { return activeTroops.Count; } }
-    [SerializeField] private TroopPool troopPool;
+    [SerializeField] private string troopPoolName;
     [SerializeField] private List<GameObject> spawnPoints;
     [SerializeField] private Player opponent;
 
@@ -96,12 +96,26 @@ public class Player : MonoBehaviour {
         if(playerIndex == playerToListenTo) { return; }
 
         playerToListenTo = playerIndex;
-        troopPool = GameManager.GetPlayerTroopPool(playerIndex);
+        switch (playerToListenTo)
+        {
+            case 0:
+                troopPoolName = "Explorers";
+                break;
+            case 1:
+                troopPoolName = "Combined";
+                break;
+            case 2:
+                troopPoolName = "Combined";
+                break;
+            default:
+                troopPoolName = "Monsters";
+                break;
+        }
     }
 
     public Troop GetRandomTroopFromPool()
     {
-        return troopPool.GetRandomTroop().GetComponent<Troop>();
+        return TroopPoolManager.GetPool(troopPoolName).GetRandomTroop().GetComponent<Troop>();
     }
 
     public Troop InstantiateTroop(Troop troopPrefab)
@@ -161,8 +175,8 @@ public class Player : MonoBehaviour {
 
     private void DeployActiveTroops()
     {
-        if(activeTroops.Count == 0) { return; }
-        for(int i = 0; (i < activeTroops.Count && i < spawnPoints.Count); i++)
+        if (activeTroops.Count == 0) { return; }
+        for (int i = 0; (i < activeTroops.Count && i < spawnPoints.Count); i++)
         {
             activeTroops[i].transform.SetParent(spawnPoints[i].transform);
             activeTroops[i].transform.localPosition = Vector3.zero;
@@ -290,11 +304,3 @@ public class Player : MonoBehaviour {
 
 }
 
-//public enum Players
-//{
-//    INVALID = -1,
-//    SINGLE,
-//    FIRST,
-//    SECOND,
-//    COMPUTER
-//}
