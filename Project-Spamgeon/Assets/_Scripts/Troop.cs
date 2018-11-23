@@ -66,7 +66,6 @@ public class Troop : MonoBehaviour {
         ps = GetComponent<ParticleSystem>();
         ResetTroop();
         stats.Initialize();
-        PushToLevel(20);
     }
 
     private void Start()

@@ -235,8 +235,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 548e330fd8c18934f8ad78cc8eb8303e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 64
-  height: 64
+  width: 128
+  height: 128
   closingLayers: 2
   minRoomSize: 25
   wallTile: {fileID: 1477031517158980, guid: f2637ddb37346a14381167a4b84db1b5, type: 2}

@@ -35,6 +35,11 @@ public class SingleButtonSelectable : MonoBehaviour {
         tabIndex_ = index;
     }
 
+    public void SetGroupIndex(int index)
+    {
+        group_ = index;
+    }
+
     public void Focus(bool playNoise = true)
     {
         SetFocusBehaviourEnabled(true);

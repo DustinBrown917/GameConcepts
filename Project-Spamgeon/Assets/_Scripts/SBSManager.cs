@@ -26,7 +26,7 @@ public class SBSManager : MonoBehaviour {
     }
 
     private void Start()
-    {
+    {      
         FocusAllCurrents();
     }
 
@@ -43,7 +43,7 @@ public class SBSManager : MonoBehaviour {
     {
         sbsGroups = new Dictionary<int, SBSGroup>();
 
-        SingleButtonSelectable[] unsortedSelectables = GetComponentsInChildren<SingleButtonSelectable>();
+        SingleButtonSelectable[] unsortedSelectables = GetComponentsInChildren<SingleButtonSelectable>(true);
         SortIntoGroups(unsortedSelectables);
         foreach (int group in sbsGroups.Keys)
         {

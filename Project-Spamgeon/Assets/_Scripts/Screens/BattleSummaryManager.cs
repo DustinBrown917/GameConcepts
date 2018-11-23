@@ -59,7 +59,7 @@ public class BattleSummaryManager : MonoBehaviour {
             } else
             {
                 primaryText.text = "You lost!";
-                secondaryText.text = "You suck, you place!";
+                secondaryText.text = "You suck, you knob!";
                 selectorButtonText.text = "Admit Defeat";
             }
         } else
@@ -67,13 +67,13 @@ public class BattleSummaryManager : MonoBehaviour {
             if (GameManager.GetLeftPlayer().ActiveTroopCount > 0)
             {
                 primaryText.text = "Player 1 Won!";
-                secondaryText.text = "Player 2, you're a Kappa.";
+                secondaryText.text = "Player 2, you're a dolt.";
                 selectorButtonText.text = "Return to Start";
             }
             else
             {
                 primaryText.text = "Player 2 Won!";
-                secondaryText.text = "Player 1, you're a Car.";
+                secondaryText.text = "Player 1, you're a pest.";
                 selectorButtonText.text = "Return to Start";
             }
         }
