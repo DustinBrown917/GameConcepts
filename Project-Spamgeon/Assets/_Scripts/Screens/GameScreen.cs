@@ -19,7 +19,7 @@ public class GameScreen : MonoBehaviour {
     /********************************* UNITY BEHAVIOURS *********************************/
     /************************************************************************************/
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         if(canvasGroup == null)
         {

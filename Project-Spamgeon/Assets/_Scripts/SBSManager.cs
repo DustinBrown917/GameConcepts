@@ -181,7 +181,9 @@ public class SBSManager : MonoBehaviour {
         do //loop while the CurrentlySelectedIndex is pointing to an inactive selectable.
         {
             if (safetyBreak >= sbsGroups[group].Selectables.Count) { //If the iteration of this loop is greater than the number of selectables, throw error.
-                throw new System.Exception("Attempting to FocusNext on group with zero active selectables.");
+                //throw new System.Exception("Attempting to FocusNext on group with zero active selectables.");
+                Debug.LogWarning("Attempting to FocusNext on group with zero active selectables.");
+                return;
             }
 
             if (sbsGroups[group].CurrentlySelectedIndex == sbsGroups[group].Selectables.Count - 1) { //If currently selected index is at the end of the list, return to zero.
