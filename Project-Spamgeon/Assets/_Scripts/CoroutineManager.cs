@@ -34,4 +34,39 @@ public static class CoroutineManager {
         behaviour.enabled = true;
         container = null;
     }
+
+    public static IEnumerator ShrinkScaleFrom(Transform trans, Vector3 initialScale, Vector3 targetScale, float shrinkTime, Coroutine container)
+    {
+        trans.localScale = initialScale;
+        float elapsedTime = 0;
+        while(elapsedTime < shrinkTime)
+        {
+            elapsedTime += Time.deltaTime;
+            trans.localScale = Vector3.Lerp(initialScale, targetScale, elapsedTime / shrinkTime);
+            yield return null;
+        }
+        trans.localScale = targetScale;
+        container = null;
+    }
+
+    public static IEnumerator FadeAlphaTo(CanvasGroup cg, float initialAlpha, float targetAlpha, float fadeTime, bool disableWhenDone, Coroutine container)
+    {
+        cg.alpha = initialAlpha;
+        float elapsedTime = 0;
+
+        while(elapsedTime < fadeTime)
+        {
+            elapsedTime += Time.deltaTime;
+            cg.alpha = Mathf.Lerp(initialAlpha, targetAlpha, elapsedTime / fadeTime);
+            yield return null;
+        }
+        cg.alpha = targetAlpha;
+
+        if (disableWhenDone)
+        {
+            cg.gameObject.SetActive(false);
+        }
+
+        container = null;
+    }
 }

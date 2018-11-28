@@ -13,6 +13,8 @@ public class BattleManager : MonoBehaviour {
     [SerializeField] private Vector3 camFinalPosition;
     [SerializeField] private float cameraSlideMaxSpeed = 1.0f;
     [SerializeField] private float smoothTime = 1.0f;
+    [SerializeField] private int countdownSeconds = 3;
+    [SerializeField] private BattleBeginBillboard battleBeginBillboard;
     private Vector3 vel;
 
     public UnityEvent OnBattleClosed;
@@ -24,6 +26,7 @@ public class BattleManager : MonoBehaviour {
 
     public void IntroduceBattle()
     {
+        battleBeginBillboard.gameObject.SetActive(false);
         GameStateHandler.ChangeState(GameStateHandler.States.PRE_BATTLE);
         cam.transform.position = camStartPosition;
         StartCoroutine(OpeningBattleSequence());
@@ -55,7 +58,22 @@ public class BattleManager : MonoBehaviour {
         }
         cam.transform.position = camFinalPosition;
 
+        battleBeginBillboard.gameObject.SetActive(true);
+        battleBeginBillboard.SetSpaceBarEnabled(false);
+
+        for(int seconds = countdownSeconds; seconds > 0; seconds--)
+        {
+            battleBeginBillboard.SetText(seconds.ToString(), true);
+            yield return new WaitForSeconds(1.0f);
+        }
+
+        battleBeginBillboard.SetText("Spam!", true);
+        battleBeginBillboard.SetSpaceBarEnabled(true);
+
         BeginBattle();
+
+        yield return new WaitForSeconds(1.0f);
+        battleBeginBillboard.FadeOut();
     }
 
     private IEnumerator ClosingBattleSequence()
