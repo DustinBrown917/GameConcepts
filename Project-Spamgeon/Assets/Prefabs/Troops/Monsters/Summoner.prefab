@@ -417,11 +417,11 @@ MonoBehaviour:
   stats:
     stats_:
     - statName_: 0
-      currentValue_: 10
+      currentValue_: 12
       levelingWeight_: 25
       levelingAmount_: 1
     - statName_: 1
-      currentValue_: 1
+      currentValue_: 0.77
       levelingWeight_: 25
       levelingAmount_: 0.1
     - statName_: 2
