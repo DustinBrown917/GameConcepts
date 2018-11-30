@@ -21,8 +21,6 @@ public class SingleButtonSelectable : MonoBehaviour {
     private bool hasFocus_ = false;
     public bool HasFocus { get { return hasFocus_; } }
 
-    private int metaInt = 0;
-
 
 	private void Awake () {
         SetSelectedBehaviourEnabled(false);
