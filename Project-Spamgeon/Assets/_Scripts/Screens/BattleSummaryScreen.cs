@@ -31,13 +31,13 @@ public class BattleSummaryScreen : GameScreen {
             if (GameManager.GetLeftPlayer().ActiveTroopCount > 0)
             {
                 primaryText.text = "You Won!";
-                secondaryText.text = "Good job, you shrub.";
+                secondaryText.text = "Good job.";
                 selectorButtonText.text = "Claim Loot";
             }
             else
             {
                 primaryText.text = "You lost!";
-                secondaryText.text = "You suck, you knob!";
+                secondaryText.text = "You're party died!";
                 selectorButtonText.text = "Admit Defeat";
             }
         }
@@ -46,13 +46,13 @@ public class BattleSummaryScreen : GameScreen {
             if (GameManager.GetLeftPlayer().ActiveTroopCount > 0)
             {
                 primaryText.text = "Player 1 Won!";
-                secondaryText.text = "Player 2, you're a dolt.";
+                secondaryText.text = "Player 2, hang your head in shame.";
                 selectorButtonText.text = "Return to Start";
             }
             else
             {
                 primaryText.text = "Player 2 Won!";
-                secondaryText.text = "Player 1, you're a pest.";
+                secondaryText.text = "Player 1, hang your head in shame.";
                 selectorButtonText.text = "Return to Start";
             }
         }
