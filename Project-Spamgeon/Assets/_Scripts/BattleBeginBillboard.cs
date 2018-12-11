@@ -30,7 +30,7 @@ public class BattleBeginBillboard : MonoBehaviour {
         text.text = t;
         if (withPulse)
         {
-            CoroutineManager.BeginCoroutine(CoroutineManager.ShrinkScaleFrom(text.transform, pulseScale, Vector3.one, pulseTime, cr_TextPulse), ref cr_TextPulse, this);
+            CoroutineManager.BeginCoroutine(CoroutineManager.ShrinkScaleFrom(text.transform, pulseScale, Vector3.one, pulseTime), ref cr_TextPulse, this);
         }
     }
 
@@ -41,6 +41,6 @@ public class BattleBeginBillboard : MonoBehaviour {
 
     public void FadeOut()
     {
-        CoroutineManager.BeginCoroutine(CoroutineManager.FadeAlphaTo(canvasGroup, 1.0f, 0.0f, fadeTime, true, cr_FadeOut), ref cr_FadeOut, this);
+        CoroutineManager.BeginCoroutine(CoroutineManager.FadeAlphaTo(canvasGroup, 1.0f, 0.0f, fadeTime, true), ref cr_FadeOut, this);
     }
 }

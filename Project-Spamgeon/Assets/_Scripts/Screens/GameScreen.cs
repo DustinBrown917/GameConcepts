@@ -55,7 +55,7 @@ public class GameScreen : MonoBehaviour {
     /// <summary>
     /// Unhooks the SBSManager from input.
     /// </summary>
-    private void UnhookSBSManager() { sbsManager.UnHookFromInput(); }
+    protected void UnhookSBSManager() { sbsManager.UnHookFromInput(); }
 
     /// <summary>
     /// Fades the canvas group alpha to 1.0 over the STANDARD_FADE_TIME seconds.
@@ -109,7 +109,7 @@ public class GameScreen : MonoBehaviour {
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="e"></param>
-    private void HookSBSManagerByEvent(object sender, TransitionCompleteArgs e)
+    protected virtual void HookSBSManagerByEvent(object sender, TransitionCompleteArgs e)
     {
         TransitionComplete -= HookSBSManagerByEvent;
         HookUpSBSManager();

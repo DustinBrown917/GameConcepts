@@ -76,7 +76,7 @@ public class BattleSummaryScreen : GameScreen {
         {
             if (GameManager.GetLeftPlayer().ActiveTroopCount > 0)
             {
-                ScreenManager.Instance.TransitionToScreen("StartScreen"); //Change this to the loot screen
+                ScreenManager.Instance.TransitionToScreen("LootScreen"); //Change this to the loot screen
             }
             else
             {   //If player lost

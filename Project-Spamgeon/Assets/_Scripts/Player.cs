@@ -88,6 +88,11 @@ public class Player : MonoBehaviour {
         if(e.playerIndex == playerToListenTo)
         {
             AddEnergyToActiveTroops();
+            AddEnergyToActiveTroops();
+            AddEnergyToActiveTroops();
+            AddEnergyToActiveTroops();
+            AddEnergyToActiveTroops();
+            AddEnergyToActiveTroops();
         }
     }
 

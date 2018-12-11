@@ -28,14 +28,13 @@ public static class CoroutineManager {
         container = null;
     }
 
-    public static IEnumerator EnableAfterDelay(MonoBehaviour behaviour, float delay, Coroutine container)
+    public static IEnumerator EnableAfterDelay(MonoBehaviour behaviour, float delay)
     {
         yield return new WaitForSeconds(delay);
         behaviour.enabled = true;
-        container = null;
     }
 
-    public static IEnumerator ShrinkScaleFrom(Transform trans, Vector3 initialScale, Vector3 targetScale, float shrinkTime, Coroutine container)
+    public static IEnumerator ShrinkScaleFrom(Transform trans, Vector3 initialScale, Vector3 targetScale, float shrinkTime)
     {
         trans.localScale = initialScale;
         float elapsedTime = 0;
@@ -46,10 +45,9 @@ public static class CoroutineManager {
             yield return null;
         }
         trans.localScale = targetScale;
-        container = null;
     }
 
-    public static IEnumerator FadeAlphaTo(CanvasGroup cg, float initialAlpha, float targetAlpha, float fadeTime, bool disableWhenDone, Coroutine container)
+    public static IEnumerator FadeAlphaTo(CanvasGroup cg, float initialAlpha, float targetAlpha, float fadeTime, bool disableWhenDone)
     {
         cg.alpha = initialAlpha;
         float elapsedTime = 0;
@@ -66,7 +64,5 @@ public static class CoroutineManager {
         {
             cg.gameObject.SetActive(false);
         }
-
-        container = null;
     }
 }
