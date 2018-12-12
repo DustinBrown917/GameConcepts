@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour {
     private static byte numOfPlayers_ = 0;
     public static byte NumOfPlayers { get { return numOfPlayers_; } }
 
-    private static int currentDungeonDepth_ = 1;
+    private static int currentDungeonDepth_ = 0;
     public static int CurrentDungeonDepth { get { return currentDungeonDepth_; } }
 
     [SerializeField] private Player leftPlayer;
@@ -87,7 +87,14 @@ public class GameManager : MonoBehaviour {
 
     public static void ResetDungeonDepth()
     {
-        currentDungeonDepth_ = 1;
+        currentDungeonDepth_ = 0;
+        OnDungeonDepthChanged(new DungeonDepthChangedArgs(currentDungeonDepth_));
+    }
+
+    public static void NextDungeonFloor()
+    {
+        currentDungeonDepth_++;
+        OnDungeonDepthChanged(new DungeonDepthChangedArgs(currentDungeonDepth_));
     }
 
     public static Player GetLeftPlayer()
@@ -122,5 +129,26 @@ public class GameManager : MonoBehaviour {
     /************************************** EVENTS **************************************/
     /************************************************************************************/
 
+    public static event EventHandler<DungeonDepthChangedArgs> DungeonDepthChanged;
+
+    public class DungeonDepthChangedArgs : EventArgs
+    {
+        public int currentDepth;
+
+        public DungeonDepthChangedArgs(int newDepth)
+        {
+            currentDepth = newDepth;
+        }
+    }
+
+    private static void OnDungeonDepthChanged(DungeonDepthChangedArgs e)
+    {
+        EventHandler<DungeonDepthChangedArgs> handler = DungeonDepthChanged;
+
+        if(handler != null)
+        {
+            handler(typeof(GameManager), e);
+        }
+    }
 }
 

@@ -9,11 +9,14 @@ public class LootScreenManager : GameScreen {
     [SerializeField] private StartSpamTimer spamTimer;
     [SerializeField] private GameObject continueButton;
     [SerializeField] private Slider lootSlider;
+    [SerializeField] private TroopAddedScreen troopAddedScreen;
     [SerializeField] private float spamSequenceDuration;
     private Coroutine cr_SpamSequence;
     [SerializeField] private float spamScore = 0;
     [SerializeField] private float targetScore;
     [SerializeField] private float maxDecayRate;
+    [SerializeField] private string targetTroopPool;
+
 
     protected override void OnEnable()
     {
@@ -63,6 +66,34 @@ public class LootScreenManager : GameScreen {
         //Doll out experience here.
         continueButton.SetActive(true);
         sbsManager.HookToInput();
+    }
+
+    private int GetTargetTroopIndex()
+    {
+        TroopPool tp = TroopPoolManager.GetPool(targetTroopPool);
+
+        return UnityEngine.Random.Range(0, tp.Count);
+    }
+
+    public void HandleNextScreen()
+    {
+        if(spamScore >= targetScore * 0.9f)
+        {
+            if(GameManager.GetLeftPlayer().ActiveTroopCount < 5)
+            {
+                troopAddedScreen.PointToPooledTroop(GetTargetTroopIndex(), targetTroopPool);
+                ScreenManager.Instance.TransitionToScreen("TroopAddedScreen");
+            } else
+            {
+                ScreenManager.Instance.TransitionToScreen("");
+                BattleManager.Instance.IntroduceBattle();
+            }
+            
+        } else
+        {
+            ScreenManager.Instance.TransitionToScreen("");
+            BattleManager.Instance.IntroduceBattle();
+        }
     }
 
     private void HookToInputGrabber()

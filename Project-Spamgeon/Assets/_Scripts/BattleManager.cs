@@ -26,6 +26,7 @@ public class BattleManager : MonoBehaviour {
 
     public void IntroduceBattle()
     {
+        GameManager.NextDungeonFloor();
         battleBeginBillboard.gameObject.SetActive(false);
         GameStateHandler.ChangeState(GameStateHandler.States.PRE_BATTLE);
         cam.transform.position = camStartPosition;
