@@ -43,6 +43,7 @@ public class LootScreenManager : GameScreen {
         lootSlider.value = 0;
         timeSlider.value = 1;
         spamScore = 0;
+        expGain = 1;
         expGained = 0;
         expText.text = "+0 EXP";
         if(GameManager.GetLeftPlayer().ActiveTroopCount >= 5)
