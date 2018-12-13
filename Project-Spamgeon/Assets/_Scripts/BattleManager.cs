@@ -15,6 +15,7 @@ public class BattleManager : MonoBehaviour {
     [SerializeField] private float smoothTime = 1.0f;
     [SerializeField] private int countdownSeconds = 3;
     [SerializeField] private BattleBeginBillboard battleBeginBillboard;
+    [SerializeField] private AudioSource battleManagerAudio;
     private Vector3 vel;
 
     public UnityEvent OnBattleClosed;
@@ -61,15 +62,27 @@ public class BattleManager : MonoBehaviour {
 
         battleBeginBillboard.gameObject.SetActive(true);
         battleBeginBillboard.SetSpaceBarEnabled(false);
+        battleBeginBillboard.SetCtrlButtonsEnabled(false);
 
-        for(int seconds = countdownSeconds; seconds > 0; seconds--)
+        battleManagerAudio.pitch = 1.0f;
+        for (int seconds = countdownSeconds; seconds > 0; seconds--)
         {
             battleBeginBillboard.SetText(seconds.ToString(), true);
+            battleManagerAudio.Play();
             yield return new WaitForSeconds(1.0f);
         }
 
+        battleManagerAudio.pitch = 1.5f;
+        battleManagerAudio.Play();
         battleBeginBillboard.SetText("Spam!", true);
-        battleBeginBillboard.SetSpaceBarEnabled(true);
+        if(GameManager.NumOfPlayers == 1)
+        {
+            battleBeginBillboard.SetSpaceBarEnabled(true);
+        } else
+        {
+            battleBeginBillboard.SetCtrlButtonsEnabled(true);
+        }
+        
 
         BeginBattle();
 
@@ -79,7 +92,12 @@ public class BattleManager : MonoBehaviour {
 
     private IEnumerator ClosingBattleSequence()
     {
-        yield return new WaitForSeconds(2.0f);
+        if(GameManager.NumOfPlayers == 1)
+        {
+            if(GameManager.GetLeftPlayer().ActiveTroopCount > 0) { MusicManager.Instance.PlaySting(MusicManager.Songs.VICTORY); }
+            else { MusicManager.Instance.PlaySting(MusicManager.Songs.DEFEAT); }
+        }
+        yield return new WaitForSeconds(1.0f);
 
         while (Vector3.Distance(cam.transform.position, camStartPosition) > 0.001f)
         {

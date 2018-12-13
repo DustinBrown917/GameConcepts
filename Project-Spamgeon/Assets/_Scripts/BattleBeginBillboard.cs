@@ -8,6 +8,8 @@ public class BattleBeginBillboard : MonoBehaviour {
 
     [SerializeField] private Text text;
     [SerializeField] private ButtonGraphic spaceBarGraphic;
+    [SerializeField] private ButtonGraphic lControlGraphic;
+    [SerializeField] private ButtonGraphic rControlGraphic;
     [SerializeField] private Vector3 pulseScale;
     [SerializeField] private float pulseTime;
     [SerializeField] private float fadeTime;
@@ -37,6 +39,12 @@ public class BattleBeginBillboard : MonoBehaviour {
     public void SetSpaceBarEnabled(bool b)
     {
         spaceBarGraphic.gameObject.SetActive(b);
+    }
+
+    public void SetCtrlButtonsEnabled(bool b)
+    {
+        lControlGraphic.gameObject.SetActive(b);
+        rControlGraphic.gameObject.SetActive(b);
     }
 
     public void FadeOut()

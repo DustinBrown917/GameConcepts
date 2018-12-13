@@ -10,6 +10,10 @@ public class StartScreen : GameScreen {
     {
         base.OnEnable();
         GameManager.ResetDungeonDepth();
+        if(MusicManager.Instance.CurrentSong != MusicManager.Songs.MENU)
+        {
+            MusicManager.Instance.SetCurrentSong(MusicManager.Songs.MENU);
+        }
     }
 
     // Use this for initialization

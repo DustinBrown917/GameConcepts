@@ -14,6 +14,14 @@ public class GameStateHandler {
 
         currentState_ = newState;
 
+        if(currentState_ == States.BATTLE)
+        {
+            MusicManager.Instance.SetCurrentSong(MusicManager.Songs.BATTLE);
+        } else
+        {
+            MusicManager.Instance.SetCurrentSong(MusicManager.Songs.MENU);           
+        }
+
         OnStateChanged(args);
     }
 

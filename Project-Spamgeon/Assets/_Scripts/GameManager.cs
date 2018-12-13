@@ -32,11 +32,13 @@ public class GameManager : MonoBehaviour {
             return;
         }
         instance_ = this;
-        GameStateHandler.ChangeState(GameStateHandler.States.MAIN);
+        Screen.SetResolution(1280, 720, false);
+        
     }
 
     // Use this for initialization
     void Start () {
+        GameStateHandler.ChangeState(GameStateHandler.States.MAIN);
         rightPlayer.NoMoreTroopsLeft += Player_NoMoreTroopsLeft;
         leftPlayer.NoMoreTroopsLeft += Player_NoMoreTroopsLeft;
     }
@@ -122,6 +124,11 @@ public class GameManager : MonoBehaviour {
     public void lChangeNumOfPlayers(int n)
     {
         SetNumOfPlayers((byte)n);
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 
 

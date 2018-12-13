@@ -169,11 +169,14 @@ public class Troop : MonoBehaviour {
     public void AddExperience(int exp)
     {
         currentExp_ += exp;
+        
         while(currentExp_ >= ExperienceThreshold)
         {
             currentExp_ -= ExperienceThreshold;
             IncrementLevel();
         }
+
+        OnExpChanged();
     }
 
     /// <summary>
@@ -340,6 +343,20 @@ public class Troop : MonoBehaviour {
         EventHandler handler = EnergyChanged;
 
         if (handler != null)
+        {
+            handler(this, EventArgs.Empty);
+        }
+    }
+    #endregion
+
+    #region ExpChanged Event
+    public event EventHandler ExpChanged;
+
+    private void OnExpChanged()
+    {
+        EventHandler handler = ExpChanged;
+
+        if(handler != null)
         {
             handler(this, EventArgs.Empty);
         }

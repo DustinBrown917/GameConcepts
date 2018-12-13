@@ -251,7 +251,7 @@ MonoBehaviour:
   m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 45981de81ad943946b8424c5efcac57b, type: 3}
   m_Color: {r: 0.6792453, g: 0.6792453, b: 0.6792453, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
@@ -383,7 +383,7 @@ MonoBehaviour:
   energySlider: {fileID: 114032157956113184}
   portrait: {fileID: 114134826368755498}
   levelText: {fileID: 114087992702879032}
-  deathSprite: {fileID: 21300000, guid: 168a3ec9144541c4e93f2d151589be2a, type: 3}
+  deathSprite: {fileID: 21300000, guid: 1246c8c0377ce9b4f87812380ee91a82, type: 3}
 --- !u!114 &114688609852307494
 MonoBehaviour:
   m_ObjectHideFlags: 1

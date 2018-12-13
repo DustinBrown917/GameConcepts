@@ -35,7 +35,7 @@ public class Player : MonoBehaviour {
             case GameStateHandler.States.PRE_BATTLE:
                 if (playerToListenTo == -1)
                 {
-                    GenerateActiveTroops(UnityEngine.Random.Range(1, Mathf.Clamp(GameManager.CurrentDungeonDepth / 2, 1, 5)));
+                    GenerateActiveTroops(FloorManager.Instance.GetMonsterCount());
                 }
                 DeployActiveTroops();
                 break;
@@ -68,13 +68,12 @@ public class Player : MonoBehaviour {
 
     private IEnumerator ComputerEnergyDistribution()
     {
-        float frequency = computerEnergyDistributionFrequency - Mathf.Clamp(GameManager.CurrentDungeonDepth * 0.01f, 0.1f, 99.0f);
         while (true){
             foreach(Troop t in activeTroops)
             {
                 t.AddEnergy();
             }
-            yield return new WaitForSeconds(frequency);
+            yield return new WaitForSeconds(computerEnergyDistributionFrequency);
         }
     }
 
@@ -87,11 +86,6 @@ public class Player : MonoBehaviour {
     {
         if(e.playerIndex == playerToListenTo)
         {
-            AddEnergyToActiveTroops();
-            AddEnergyToActiveTroops();
-            AddEnergyToActiveTroops();
-            AddEnergyToActiveTroops();
-            AddEnergyToActiveTroops();
             AddEnergyToActiveTroops();
         }
     }
@@ -150,6 +144,8 @@ public class Player : MonoBehaviour {
         for(int i = 0; i < count; i++)
         {
             AddActiveTroop(GetRandomTroopFromPool());
+            activeTroops[i].PushToLevel(GameManager.CurrentDungeonDepth);
+            activeTroops[i].ResetTroop();
         }
     }
 

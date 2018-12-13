@@ -9,8 +9,10 @@ public class BattleSummaryScreen : GameScreen {
     [SerializeField] private Text primaryText;
     [SerializeField] private Text secondaryText;
     [SerializeField] private GameObject selectorButton;
+    [SerializeField] private GameObject returnToStartButton;
     [SerializeField] private float delaySeconds;
     private Coroutine cr_EnableSelectableAfterDelay = null;
+    private Coroutine cr_EnableReturnToStartAfterDelay = null;
     private Text selectorButtonText;
 
     protected override void Awake()
@@ -23,21 +25,27 @@ public class BattleSummaryScreen : GameScreen {
     {
         base.OnEnable();
         selectorButton.SetActive(false);
+        returnToStartButton.SetActive(false);
         CoroutineManager.BeginCoroutine(CoroutineManager.EnableAfterDelay(selectorButton, delaySeconds, cr_EnableSelectableAfterDelay), ref cr_EnableSelectableAfterDelay, this);
+        if(GameManager.NumOfPlayers == 1)
+        {
+            CoroutineManager.BeginCoroutine(CoroutineManager.EnableAfterDelay(returnToStartButton, delaySeconds, cr_EnableReturnToStartAfterDelay), ref cr_EnableReturnToStartAfterDelay, this);
+        }
+
         InputGrabber.Instance.TabEvent += InputGrabber_TabEvent;
 
         if (GameManager.NumOfPlayers == 1)
         { //Single player battle end
             if (GameManager.GetLeftPlayer().ActiveTroopCount > 0)
             {
-                primaryText.text = "You Won!";
-                secondaryText.text = "Good job.";
+                primaryText.text = "Victory!";
+                secondaryText.text = "Tend your wounds and gather your party, there are deeper depths yet to plumb.";
                 selectorButtonText.text = "Claim Loot";
             }
             else
             {
-                primaryText.text = "You lost!";
-                secondaryText.text = "You're party died!";
+                primaryText.text = "A Bitter End...";
+                secondaryText.text = "Your party has been claimed by The Spamgeon. Their bodies lie forever more on floor " + GameManager.CurrentDungeonDepth.ToString() + ", a warning to any who might come after.";
                 selectorButtonText.text = "Admit Defeat";
             }
         }
@@ -45,14 +53,14 @@ public class BattleSummaryScreen : GameScreen {
         { //Multiplayer battle end
             if (GameManager.GetLeftPlayer().ActiveTroopCount > 0)
             {
-                primaryText.text = "Player 1 Won!";
-                secondaryText.text = "Player 2, hang your head in shame.";
+                primaryText.text = "Player 1 Stands Victorious!";
+                secondaryText.text = "Player 2's party was no match.";
                 selectorButtonText.text = "Return to Start";
             }
             else
             {
-                primaryText.text = "Player 2 Won!";
-                secondaryText.text = "Player 1, hang your head in shame.";
+                primaryText.text = "Player 2 Claims the Day!";
+                secondaryText.text = "Player 1 may find better luck in the afterlife.";
                 selectorButtonText.text = "Return to Start";
             }
         }

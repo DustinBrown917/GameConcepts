@@ -431,7 +431,7 @@ MonoBehaviour:
   currentHealth_: 0
   currentEnergy_: 0
   isAlive: 1
-  attackSound: {fileID: 8300000, guid: 04d58b4a7a6bf0c458a746e1ed94c540, type: 3}
+  attackSound: {fileID: 8300000, guid: 97735fee4ef429342baae64efb7fb591, type: 3}
   deathSound: {fileID: 8300000, guid: 6afaa53d41525924980cd993da2eab40, type: 3}
   graphic_: {fileID: 212774108312581190}
   woundedColor: {r: 1, g: 0, b: 0, a: 1}
