@@ -5761,7 +5761,7 @@ MonoBehaviour:
   spamSequenceDuration: 10
   spamScore: 0
   targetScore: 20
-  maxDecayRate: 0.13
+  maxDecayRate: 0.1
   targetTroopPool: Explorers
 --- !u!225 &709776479
 CanvasGroup:
