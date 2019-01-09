@@ -10,6 +10,9 @@ public class InputGrabber : MonoBehaviour {
 
     [SerializeField] private float[] playerTimers;
     [SerializeField] private KeyCode[] playerKeys;
+    [SerializeField] private string[] playerButtons;
+    private float[] previousAxisValues;
+    private float[] currentAxisValues;
     private Coroutine[] timerCoroutines;
     [SerializeField] private float timeToSelect = 1.0f;
     public float TimeToSelect { get { return timeToSelect; } }
@@ -32,20 +35,28 @@ public class InputGrabber : MonoBehaviour {
         }
         instance_ = this;
 
-        playerTimers = new float[playerKeys.Length];
-        timerCoroutines = new Coroutine[playerKeys.Length];
+        playerTimers = new float[playerButtons.Length];
+        timerCoroutines = new Coroutine[playerButtons.Length];
+        previousAxisValues = new float[playerButtons.Length];
+        currentAxisValues = new float[playerButtons.Length];
     }
 
     private void Update()
     {
         if (inputBlocked_) { return; }
-
-        for(int i = 0; i < playerKeys.Length; i++)
-        {
-            if (Input.GetKeyDown(playerKeys[i]))
-            {
+        for (int i = 0; i < playerButtons.Length; i++) {
+            currentAxisValues[i] = Input.GetAxis(playerButtons[i]);
+            if (currentAxisValues[i] != 0 && currentAxisValues[i] != previousAxisValues[i]) {
+                previousAxisValues[i] = currentAxisValues[i];
                 StartSelectionTimer(i);
             }
+        }
+    }
+
+    private void LateUpdate()
+    {
+        for(int i = 0; i < playerButtons.Length; i++) {
+            previousAxisValues[i] = currentAxisValues[i];
         }
     }
 
@@ -84,12 +95,13 @@ public class InputGrabber : MonoBehaviour {
     private IEnumerator SelectionTimer(int index, Coroutine container)
     {
         int playerIndex = index;
-        while (Input.GetKey(playerKeys[playerIndex]) && playerTimers[playerIndex] < timeToSelect) {
+
+        while (playerTimers[playerIndex] < timeToSelect && currentAxisValues[playerIndex] == previousAxisValues[playerIndex]) {
             playerTimers[playerIndex] += Time.deltaTime;
             yield return null;
         }
 
-        if (playerTimers[playerIndex] >= timeToSelect)  {
+        if (playerTimers[playerIndex] >= timeToSelect) {
             OnSelectEvent(new SelectEventArgs(index));
         }
         else {
