@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour {
         GameStateHandler.ChangeState(GameStateHandler.States.MAIN);
         rightPlayer.NoMoreTroopsLeft += Player_NoMoreTroopsLeft;
         leftPlayer.NoMoreTroopsLeft += Player_NoMoreTroopsLeft;
+        SetNumOfPlayers(1);
     }
 
     private void Player_NoMoreTroopsLeft(object sender, Player.NoMoreTroopsLeftArgs e)
@@ -62,10 +63,16 @@ public class GameManager : MonoBehaviour {
         {
             Instance.leftPlayer.ChangePlayerType(0);
             Instance.rightPlayer.ChangePlayerType(-1);
+            InputGrabber.Instance.SetInputBlocked(0, false);
+            InputGrabber.Instance.SetInputBlocked(1, true);
+            InputGrabber.Instance.SetInputBlocked(2, true);
         } else
         {
             Instance.leftPlayer.ChangePlayerType(1);
             Instance.rightPlayer.ChangePlayerType(2);
+            InputGrabber.Instance.SetInputBlocked(0, true);
+            InputGrabber.Instance.SetInputBlocked(1, false);
+            InputGrabber.Instance.SetInputBlocked(2, false);
         }
     }
 

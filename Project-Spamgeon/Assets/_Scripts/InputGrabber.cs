@@ -18,6 +18,7 @@ public class InputGrabber : MonoBehaviour {
     public float TimeToSelect { get { return timeToSelect; } }
     private bool inputBlocked_ = false;
     public bool InputBlocked { get { return inputBlocked_; } }
+    private bool[] inputBlocked;
     /*
      * Need to set up an array that will store which players' input is blocked. 
      */
@@ -39,12 +40,14 @@ public class InputGrabber : MonoBehaviour {
         timerCoroutines = new Coroutine[playerButtons.Length];
         previousAxisValues = new float[playerButtons.Length];
         currentAxisValues = new float[playerButtons.Length];
+        inputBlocked = new bool[playerButtons.Length];
     }
 
     private void Update()
     {
         if (inputBlocked_) { return; }
         for (int i = 0; i < playerButtons.Length; i++) {
+            if (inputBlocked[i]) { continue; }
             currentAxisValues[i] = Input.GetAxis(playerButtons[i]);
             if (currentAxisValues[i] != 0 && currentAxisValues[i] != previousAxisValues[i]) {
                 previousAxisValues[i] = currentAxisValues[i];
@@ -73,6 +76,28 @@ public class InputGrabber : MonoBehaviour {
     {
         if(index < 0 || index >= playerTimers.Length) { return -1; }
         return playerTimers[index];
+    }
+
+    /// <summary>
+    /// Get whether or not a player's input is blocked.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public bool GetInputBlocked(int index)
+    {
+        if(index < 0 || index > inputBlocked.Length) { return false; }
+        return inputBlocked[index];
+    }
+
+    /// <summary>
+    /// Set whether or not a player's input is blocked.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="blocked"></param>
+    public void SetInputBlocked(int index, bool blocked)
+    {
+        if (index < 0 || index > inputBlocked.Length) { return; }
+        inputBlocked[index] = blocked;
     }
 
     /// <summary>
@@ -149,7 +174,6 @@ public class InputGrabber : MonoBehaviour {
             handler(this, t);
         }
 
-        //Debug.Log("Tab Event for " + t.player.ToString());
     }
     #endregion
 
@@ -175,7 +199,6 @@ public class InputGrabber : MonoBehaviour {
             handler(this, s);
         }
 
-        //Debug.Log("Select Event for " + s.player.ToString());
     }
     #endregion
 
@@ -201,7 +224,6 @@ public class InputGrabber : MonoBehaviour {
             handler(this, s);
         }
 
-        //Debug.Log("Select Event for " + s.player.ToString());
     }
     #endregion
 }
