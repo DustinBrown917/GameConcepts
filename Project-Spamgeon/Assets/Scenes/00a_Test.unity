@@ -7769,6 +7769,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648ebbd429fb68240acbfcac30cb0fbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  masterControls:
+    m_Asset: {fileID: 11400000, guid: 486da4bc11454e04e932fd26d3a98bca, type: 3}
   playerTimers: []
   playerKeys: 200000003201000031010000
   playerButtons:

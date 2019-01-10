@@ -2,11 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Input;
+using UnityEngine.Experimental.Input.Plugins.Users;
 
 public class InputGrabber : MonoBehaviour {
 
     private static InputGrabber instance_;
     public static InputGrabber Instance { get { return instance_; } }
+
+    public MasterInput masterControls;
 
     [SerializeField] private float[] playerTimers;
     [SerializeField] private KeyCode[] playerKeys;
@@ -41,6 +45,21 @@ public class InputGrabber : MonoBehaviour {
         previousAxisValues = new float[playerButtons.Length];
         currentAxisValues = new float[playerButtons.Length];
         inputBlocked = new bool[playerButtons.Length];
+    }
+
+    private void Start()
+    {
+        masterControls.MainAction.SpamTest.performed += SpamTest_performed;
+        masterControls.Enable();
+        InputUser user = new InputUser();
+
+
+        
+    }
+
+    private void SpamTest_performed(InputAction.CallbackContext obj)
+    {
+        Debug.Log(obj.time);
     }
 
     private void Update()
