@@ -53,7 +53,6 @@ public class InputGrabber : MonoBehaviour {
         masterControls.Enable();
         InputUser user = new InputUser();
 
-
         
     }
 
