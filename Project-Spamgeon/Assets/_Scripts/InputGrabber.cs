@@ -23,6 +23,9 @@ public class InputGrabber : MonoBehaviour {
     private bool inputBlocked_ = false;
     public bool InputBlocked { get { return inputBlocked_; } }
     private bool[] inputBlocked;
+
+    InputUser mainPlayer;
+
     /*
      * Need to set up an array that will store which players' input is blocked. 
      */
@@ -45,6 +48,8 @@ public class InputGrabber : MonoBehaviour {
         previousAxisValues = new float[playerButtons.Length];
         currentAxisValues = new float[playerButtons.Length];
         inputBlocked = new bool[playerButtons.Length];
+
+        mainPlayer = new InputUser();
     }
 
     private void Start()
@@ -52,13 +57,34 @@ public class InputGrabber : MonoBehaviour {
         masterControls.MainAction.SpamTest.performed += SpamTest_performed;
         masterControls.Enable();
         InputUser user = new InputUser();
+        InputDevice id = new InputDevice();
 
+        for(int i = 0; i < InputUser.GetUnpairedInputDevices().Count; i++)
+        {
+            if(i < 3)
+            {
+                InputUser.PerformPairingWithDevice(InputUser.GetUnpairedInputDevices()[i], mainPlayer, InputUserPairingOptions.None);
+            }
+        }
+        
         
     }
 
-    private void SpamTest_performed(InputAction.CallbackContext obj)
+    private void SpamTest_performed(InputAction.CallbackContext ctx)
     {
-        Debug.Log(obj.time);
+        bool mainPlayersDevice = false;
+
+        foreach(InputDevice id in mainPlayer.pairedDevices)
+        {
+            if (ctx.control.device.id == id.id)
+            {
+                mainPlayersDevice = true;
+                break;
+            }
+        }
+        
+        Debug.Log("Main Player's Device: " + mainPlayersDevice);
+        
     }
 
     private void Update()
