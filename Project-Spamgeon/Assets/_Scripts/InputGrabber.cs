@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.Input;
 using UnityEngine.Experimental.Input.Plugins.Users;
+using UnityEngine.Experimental.Input.Utilities;
 
 public class InputGrabber : MonoBehaviour {
 
@@ -24,7 +25,7 @@ public class InputGrabber : MonoBehaviour {
     public bool InputBlocked { get { return inputBlocked_; } }
     private bool[] inputBlocked;
 
-    InputUser mainPlayer;
+    private InputUser[] users;
 
     /*
      * Need to set up an array that will store which players' input is blocked. 
@@ -49,21 +50,30 @@ public class InputGrabber : MonoBehaviour {
         currentAxisValues = new float[playerButtons.Length];
         inputBlocked = new bool[playerButtons.Length];
 
-        mainPlayer = new InputUser();
+
+        users = new InputUser[3];
+
+        for(int i = 0; i < users.Length; i++)
+        {
+            users[i] = new InputUser();
+            //users[i].AssociateActionsWithUser(masterControls);
+            Debug.Log("ID: " + users[i].id + " Valid: " + users[i].valid);
+            users[i].
+        }
+
     }
 
     private void Start()
     {
         masterControls.MainAction.SpamTest.performed += SpamTest_performed;
         masterControls.Enable();
-        InputUser user = new InputUser();
         InputDevice id = new InputDevice();
 
         for(int i = 0; i < InputUser.GetUnpairedInputDevices().Count; i++)
         {
             if(i < 3)
             {
-                InputUser.PerformPairingWithDevice(InputUser.GetUnpairedInputDevices()[i], mainPlayer, InputUserPairingOptions.None);
+                InputUser.PerformPairingWithDevice(InputUser.GetUnpairedInputDevices()[i], users[0], InputUserPairingOptions.None);
             }
         }
         
@@ -74,7 +84,7 @@ public class InputGrabber : MonoBehaviour {
     {
         bool mainPlayersDevice = false;
 
-        foreach(InputDevice id in mainPlayer.pairedDevices)
+        foreach(InputDevice id in users[0].pairedDevices)
         {
             if (ctx.control.device.id == id.id)
             {
