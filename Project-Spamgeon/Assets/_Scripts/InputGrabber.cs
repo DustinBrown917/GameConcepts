@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Rewired;
 
 public class InputGrabber : MonoBehaviour {
 
@@ -16,12 +17,11 @@ public class InputGrabber : MonoBehaviour {
     private Coroutine[] timerCoroutines;
     [SerializeField] private float timeToSelect = 1.0f;
     public float TimeToSelect { get { return timeToSelect; } }
-    private bool inputBlocked_ = false;
-    public bool InputBlocked { get { return inputBlocked_; } }
     private bool[] inputBlocked;
-    /*
-     * Need to set up an array that will store which players' input is blocked. 
-     */
+
+
+    private Rewired.Player[] players;
+    
 
     /************************************************************************************/
     /********************************* UNITY BEHAVIOURS *********************************/
@@ -29,6 +29,7 @@ public class InputGrabber : MonoBehaviour {
 
     private void Awake()
     {
+
         if(instance_ != null)
         {
             Destroy(gameObject);
@@ -36,30 +37,66 @@ public class InputGrabber : MonoBehaviour {
         }
         instance_ = this;
 
+        players = new Rewired.Player[3];
+        for(int i = 0; i < players.Length; i++)
+        {
+            players[i] = ReInput.players.GetPlayer(i);
+        }
+
         playerTimers = new float[playerButtons.Length];
         timerCoroutines = new Coroutine[playerButtons.Length];
         previousAxisValues = new float[playerButtons.Length];
         currentAxisValues = new float[playerButtons.Length];
         inputBlocked = new bool[playerButtons.Length];
+
+        GameManager.NumberOfPlayersChanged += GameManager_NumberOfPlayersChanged;
+
+        foreach(Controller c in ReInput.controllers.Joysticks)
+        {
+            Debug.Log(c.name);
+        }
+
+    }
+
+    private void Start()
+    {
+        AssignControllers();
+    }
+
+    private void GameManager_NumberOfPlayersChanged(object sender, GameManager.NumberOfPlayersChangedArgs e)
+    {
+        Debug.Log("Num of players changed");
+    }
+
+    private void AssignControllers()
+    {
+        foreach(Rewired.Player p in players)
+        {
+            p.controllers.ClearControllersOfType<Joystick>();
+        }
+
+        players[0].controllers.AddController(ReInput.controllers.Joysticks[0], false);
+        players[1].controllers.AddController(ReInput.controllers.Joysticks[0], false);
+
+        if (ReInput.controllers.joystickCount > 1)
+        {
+            players[2].controllers.AddController(ReInput.controllers.Joysticks[1], true);
+        }
     }
 
     private void Update()
     {
-        if (inputBlocked_) { return; }
-        for (int i = 0; i < playerButtons.Length; i++) {
+        for (int i = 0; i < players.Length; i++)
+        {
             if (inputBlocked[i]) { continue; }
-            currentAxisValues[i] = Input.GetAxis(playerButtons[i]);
-            if (currentAxisValues[i] != 0 && currentAxisValues[i] != previousAxisValues[i]) {
-                previousAxisValues[i] = currentAxisValues[i];
-                StartSelectionTimer(i);
-            }
-        }
-    }
 
-    private void LateUpdate()
-    {
-        for(int i = 0; i < playerButtons.Length; i++) {
-            previousAxisValues[i] = currentAxisValues[i];
+            if (players[i].GetButtonDown("SpamLeft"))
+            {
+                StartSelectionTimer(i, SpamSides.LEFT);
+            } else if (players[i].GetButtonDown("SpamRight"))
+            {
+                StartSelectionTimer(i, SpamSides.RIGHT);
+            }
         }
     }
 
@@ -104,10 +141,15 @@ public class InputGrabber : MonoBehaviour {
     /// Begins running a selection timer.
     /// </summary>
     /// <param name="index">The timer to run.</param>
-    private void StartSelectionTimer(int index)
+    private void StartSelectionTimer(int index, SpamSides spamSide)
     {
         CoroutineManager.HaltCoroutine(ref timerCoroutines[index], this);
-        CoroutineManager.BeginCoroutine(SelectionTimer(index, timerCoroutines[index]), ref timerCoroutines[index], this);
+        if(playerTimers[index] > 0)
+        {
+            playerTimers[index] = 0;
+            OnTabEvent(new TabEventArgs(index));
+        }
+        CoroutineManager.BeginCoroutine(SelectionTimer(index, spamSide, timerCoroutines[index]), ref timerCoroutines[index], this);
         OnInputEventStart(new InputEventStartArgs(index));
     }
 
@@ -117,11 +159,15 @@ public class InputGrabber : MonoBehaviour {
     /// <param name="index"></param>
     /// <param name="container"></param>
     /// <returns></returns>
-    private IEnumerator SelectionTimer(int index, Coroutine container)
+    private IEnumerator SelectionTimer(int index, SpamSides spamSide, Coroutine container)
     {
         int playerIndex = index;
 
-        while (playerTimers[playerIndex] < timeToSelect && currentAxisValues[playerIndex] == previousAxisValues[playerIndex]) {
+        while (playerTimers[playerIndex] < timeToSelect) {
+            if((spamSide == SpamSides.LEFT && players[playerIndex].GetButtonUp("SpamLeft")) || (spamSide == SpamSides.RIGHT && players[playerIndex].GetButtonUp("SpamRight")))
+            {
+                break;
+            }
             playerTimers[playerIndex] += Time.deltaTime;
             yield return null;
         }
@@ -226,6 +272,16 @@ public class InputGrabber : MonoBehaviour {
 
     }
     #endregion
+
+
+
+
+
+    private enum SpamSides
+    {
+        LEFT,
+        RIGHT
+    }
 }
 
 

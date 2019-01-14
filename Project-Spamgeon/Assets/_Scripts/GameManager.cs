@@ -55,7 +55,9 @@ public class GameManager : MonoBehaviour {
 
     public static void SetNumOfPlayers(byte num)
     {
-        if(numOfPlayers_ == num || num == 0) { return; }
+        if(numOfPlayers_ == num || num <= 0) { return; }
+
+        NumberOfPlayersChangedArgs e = new NumberOfPlayersChangedArgs(numOfPlayers_, num);
 
         numOfPlayers_ = num;
 
@@ -74,6 +76,8 @@ public class GameManager : MonoBehaviour {
             InputGrabber.Instance.SetInputBlocked(1, false);
             InputGrabber.Instance.SetInputBlocked(2, false);
         }
+
+        OnNumberOfPlayersChanged(e);
     }
 
     /// <summary>
@@ -128,8 +132,8 @@ public class GameManager : MonoBehaviour {
         return true;
     }
 
-    public void lChangeNumOfPlayers(int n)
-    {
+    public void lChangeNumOfPlayers(int n) //Must remain int to appear in editor
+    {        
         SetNumOfPlayers((byte)n);
     }
 
@@ -158,6 +162,33 @@ public class GameManager : MonoBehaviour {
     private static void OnDungeonDepthChanged(DungeonDepthChangedArgs e)
     {
         EventHandler<DungeonDepthChangedArgs> handler = DungeonDepthChanged;
+
+        if(handler != null)
+        {
+            handler(typeof(GameManager), e);
+        }
+    }
+
+
+
+
+    public static event EventHandler<NumberOfPlayersChangedArgs> NumberOfPlayersChanged;
+
+    public class NumberOfPlayersChangedArgs : EventArgs
+    {
+        public byte oldNumOfPlayers;
+        public byte newNumOfPlayers;
+
+        public NumberOfPlayersChangedArgs(byte oldNumOfPlayers, byte newNumOfPlayers)
+        {
+            this.oldNumOfPlayers = oldNumOfPlayers;
+            this.newNumOfPlayers = newNumOfPlayers;
+        }
+    }
+
+    private static void OnNumberOfPlayersChanged(NumberOfPlayersChangedArgs e)
+    {
+        EventHandler<NumberOfPlayersChangedArgs> handler = NumberOfPlayersChanged;
 
         if(handler != null)
         {

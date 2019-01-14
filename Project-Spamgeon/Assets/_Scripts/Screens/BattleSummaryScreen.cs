@@ -9,27 +9,42 @@ public class BattleSummaryScreen : GameScreen {
     [SerializeField] private Text primaryText;
     [SerializeField] private Text secondaryText;
     [SerializeField] private GameObject selectorButton;
+    [SerializeField] private GameObject selectorButtonMulti;
     [SerializeField] private GameObject returnToStartButton;
     [SerializeField] private float delaySeconds;
+    [SerializeField] private SelectionMeter multiSelectionMeter;
     private Coroutine cr_EnableSelectableAfterDelay = null;
     private Coroutine cr_EnableReturnToStartAfterDelay = null;
     private Text selectorButtonText;
+    private Text selectorButtonMultiText;
+
+    private bool started;
 
     protected override void Awake()
     {
         base.Awake();
         selectorButtonText = selectorButton.GetComponentInChildren<Text>();
+        selectorButtonMultiText = selectorButtonMulti.GetComponentInChildren<Text>();
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
+
+        
+
         selectorButton.SetActive(false);
+        selectorButtonMulti.SetActive(false);
         returnToStartButton.SetActive(false);
-        CoroutineManager.BeginCoroutine(CoroutineManager.EnableAfterDelay(selectorButton, delaySeconds, cr_EnableSelectableAfterDelay), ref cr_EnableSelectableAfterDelay, this);
-        if(GameManager.NumOfPlayers == 1)
+
+        if (GameManager.NumOfPlayers == 1)
         {
+            CoroutineManager.BeginCoroutine(CoroutineManager.EnableAfterDelay(selectorButton, delaySeconds, cr_EnableSelectableAfterDelay), ref cr_EnableSelectableAfterDelay, this);
             CoroutineManager.BeginCoroutine(CoroutineManager.EnableAfterDelay(returnToStartButton, delaySeconds, cr_EnableReturnToStartAfterDelay), ref cr_EnableReturnToStartAfterDelay, this);
+        }
+        else
+        {
+            CoroutineManager.BeginCoroutine(CoroutineManager.EnableAfterDelay(selectorButtonMulti, delaySeconds, cr_EnableSelectableAfterDelay), ref cr_EnableSelectableAfterDelay, this);
         }
 
         InputGrabber.Instance.TabEvent += InputGrabber_TabEvent;
@@ -55,22 +70,30 @@ public class BattleSummaryScreen : GameScreen {
             {
                 primaryText.text = "Player 1 Stands Victorious!";
                 secondaryText.text = "Player 2's party was no match.";
-                selectorButtonText.text = "Return to Start";
+                selectorButtonMultiText.text = "Return to Start";
             }
             else
             {
                 primaryText.text = "Player 2 Claims the Day!";
                 secondaryText.text = "Player 1 may find better luck in the afterlife.";
-                selectorButtonText.text = "Return to Start";
+                selectorButtonMultiText.text = "Return to Start";
             }
         }
+
+        if (started)
+        {
+            sbsManager.AddSelectionMeter(1, multiSelectionMeter);
+        } 
     }
 
     protected override void Start () {
         base.Start();
 
         sbsManager.AddSelectionMeter(0, mainSelectionMeter);
-	}
+        sbsManager.AddSelectionMeter(1, multiSelectionMeter);
+
+        started = true;
+    }
 
     protected override void OnDisable()
     {

@@ -31,12 +31,14 @@ public class MultiPartySelectScreen : GameScreen {
 
     [SerializeField] private ImageSelectable troopSelectablePrefab;
 
+    private bool started;
 
     protected override void Awake()
     {
         base.Awake();
         firstPlayerSelectedPartyIndeces = new int[firstPlayerSelectedPartyPortraits.Length];
         secondPlayerSelectedPartyIndeces = new int[secondPlayerSelectedPartyPortraits.Length];
+
 
     }
 
@@ -52,21 +54,28 @@ public class MultiPartySelectScreen : GameScreen {
 
         sbsManager.RefreshSelectables();
 
-        sbsManager.AddSelectionMeter(0, mainSelectionMeter);
         sbsManager.AddSelectionMeter(1, firstPlayerSelectionMeter);
         sbsManager.AddSelectionMeter(2, secondPlayerSelectionMeter);
 
-
+        started = true;
     }
 
     protected override void OnEnable()
     {
         base.OnEnable();
+        
+
         InitIndexArrays();
         InitSelectableArrays();
 
         if (firstPlayerReady) { ToggleReady(1); }
         if (secondPlayerReady) { ToggleReady(2); }
+
+        if (started)
+        {
+            sbsManager.AddSelectionMeter(1, firstPlayerSelectionMeter);
+            sbsManager.AddSelectionMeter(2, secondPlayerSelectionMeter);
+        }
     }
 
     public void ToggleReady(int playerNumber)
