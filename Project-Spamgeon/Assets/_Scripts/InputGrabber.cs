@@ -70,6 +70,7 @@ public class InputGrabber : MonoBehaviour {
 
     private void AssignControllers()
     {
+        if(ReInput.controllers.joystickCount == 0) { return; }
         foreach(Rewired.Player p in players)
         {
             p.controllers.ClearControllersOfType<Joystick>();
